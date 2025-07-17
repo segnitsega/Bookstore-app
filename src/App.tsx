@@ -1,10 +1,12 @@
 import NavBar from "./components/navBar"
+import Welcome from "./components/welcome"
 
 const App = () => {
 
   return (
-    <div>
+    <div className="flex flex-col gap-8">
       <NavBar />
+      <Welcome />
     </div>
   )
 }

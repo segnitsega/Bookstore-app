@@ -4,7 +4,7 @@ import { FcPicture } from "react-icons/fc";
 
 const NavBar = () => {
   return (
-    <div className="flex items-center justify-around mt-2">
+    <div className="flex items-center justify-between m-2">
       <div className="flex items-center gap-1">
         <IoMdBook size={35} className="text-amber-600" />
         <h1 className="text-amber-900 font-bold text-2xl">BookHub</h1>
@@ -18,20 +18,19 @@ const NavBar = () => {
         <input
           type="text"
           placeholder="Search books, authors..."
-          className="outline-none p-1 w-[400px]"
+          className="outline-none w-[400px]"
         />
       </div>
       <div className="flex items-center gap-8">
         <div className="relative">
-          <CiShoppingCart size={30} className="text-blue-600"/>
-          <span className="absolute -top-2 -right-6 w-5 h-5 flex items-center justify-center bg-amber-500 text-white text-sm rounded-lg">
+          <CiShoppingCart size={30} className="text-blue-600" />
+          <span className="absolute -top-2 -right-6 w-5 h-5 flex items-center justify-center bg-amber-600 text-white text-sm rounded-lg">
             2
           </span>
         </div>
         <FcPicture size={35} />
       </div>
     </div>
-   
   );
 };
 
