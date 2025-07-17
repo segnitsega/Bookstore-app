@@ -1,14 +1,15 @@
 import Card from "./components/card";
 import NavBar from "./components/navBar";
 import Welcome from "./components/welcome";
-
+import FeaturedBooks from "./components/featured-books";
 
 const App = () => {
   return (
     <div className="flex flex-col gap-4">
       {/* <NavBar /> */}
       <Welcome />
-<Card />
+      <Card />
+      <FeaturedBooks />
       {/* <div className="flex justify-around">
         <Card
           icon={MdOutlineLocalShipping}
