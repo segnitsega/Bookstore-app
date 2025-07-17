@@ -2,6 +2,7 @@ import Card from "./components/card";
 import NavBar from "./components/navBar";
 import Welcome from "./components/welcome";
 import FeaturedBooks from "./components/featured-books";
+import Bestsellers from "./components/best-sellers";
 
 const App = () => {
   return (
@@ -10,6 +11,7 @@ const App = () => {
       <Welcome />
       <Card />
       <FeaturedBooks />
+      <Bestsellers />
       {/* <div className="flex justify-around">
         <Card
           icon={MdOutlineLocalShipping}
