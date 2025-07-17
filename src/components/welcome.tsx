@@ -49,7 +49,7 @@ const Welcome = () => {
           <IoMdBook size={25} className="text-amber-600" />
           <span>10,000+ Books</span>
         </div>
-        <img src={books} alt="books_image" className="rounded-xl" />
+        <img src={books} alt="books_image" className="rounded-xl w-[300px] md:w-[500px] lg:w-[900px]" />
       </div>
     </div>
   );
