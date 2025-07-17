@@ -6,9 +6,9 @@ import Bestsellers from "../components/best-sellers";
 import UpdateSection from "../components/update-section";
 import Footer from "../components/footer";
 
-const HomePage = () => {
+const LandingPage = () => {
   return (
-    <div className="flex flex-col">
+    <div>
       <NavBar />
       <Welcome />
       <Card />
@@ -20,4 +20,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default LandingPage;

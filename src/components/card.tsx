@@ -5,7 +5,7 @@ import { CiHeart } from "react-icons/ci";
 
 const Card = () => {
   return (
-    <div className="flex flex-col items-center gap-4 md:flex-row justify-around mb-8">
+    <div className="flex flex-col items-center gap-4 md:flex-row justify-around mt-14 mb-14">
       <div className=" border border-gray-200 shadow  rounded-md px-6 py-4  md:px-8 md:py-6 flex w-[300px] flex-col items-center md:w-[400px] gap-2">
         <MdOutlineLocalShipping
           size={40}

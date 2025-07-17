@@ -1,9 +1,9 @@
-import HomePage from "./pages/homePage";
+import LandingPage from "./pages/landingPage";
 
 const App = () => {
   return (
     <div className="flex flex-col">
-      <HomePage />
+      <LandingPage />
       
     </div>
   );
