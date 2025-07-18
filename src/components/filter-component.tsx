@@ -12,7 +12,7 @@ import { TbLetterX } from "react-icons/tb";
 
 const Filter = () => {
   return (
-    <div className="m-10 p-6 w-[350px] shadow rounded-lg flex flex-col gap-4 border border-gray-200">
+    <div className="p-6 h-screen max-w-4xl min-w-[300px] shadow rounded-lg flex flex-col gap-4 border border-gray-200">
       <div className="flex items-center font-bold gap-2">
         <LuFilter size={20} />
         <span className="text-2xl">Filters</span>

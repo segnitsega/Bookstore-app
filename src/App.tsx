@@ -2,16 +2,17 @@ import Filter from "./components/filter-component";
 import NavBar from "./components/navBar";
 import BooksPage from "./pages/booksPage";
 import LandingPage from "./pages/landingPage";
+import BookLayout from "./components/book-layout";
 
 const App = () => {
   return (
-    <div className="flex flex-col">
-      {/* <LandingPage /> */}
-      <NavBar />
-      {/* <BooksPage /> */}
-
-      <Filter />
-      
+    <div className="">
+      {/* <LandingPage /> 
+       
+      <BooksPage />*/}
+      {/* <NavBar /> */}
+      {/* <Filter />  */}
+      <BooksPage />
     </div>
   );
 };
