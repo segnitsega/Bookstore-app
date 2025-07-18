@@ -13,7 +13,7 @@ import BookLayout from "@/components/book-layout";
 const BookDetails = () => {
   return (
     <div className="m-8">
-      <Button className=" bg-amber-500 cursor-pointer w-20">Back</Button>
+      <Button className=" bg-amber-500 cursor-pointer w-20 border hover:border-blue-500 cursor-pointer hover:bg-amber-600">Back</Button>
       <FaArrowLeft className="relative -top-7 left-1 text-white" />
 
       <div className="flex w-full gap-10">
