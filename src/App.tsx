@@ -3,6 +3,7 @@ import NavBar from "./components/navBar";
 import BooksPage from "./pages/booksPage";
 import LandingPage from "./pages/landingPage";
 import BookLayout from "./components/book-layout";
+import BookDetails from "./pages/bookDetails";
 
 const App = () => {
   return (
@@ -10,9 +11,8 @@ const App = () => {
       {/* <LandingPage /> 
        
       <BooksPage />*/}
-      {/* <NavBar /> */}
-      {/* <Filter />  */}
-      <BooksPage />
+      <NavBar />
+      <BookDetails />
     </div>
   );
 };
