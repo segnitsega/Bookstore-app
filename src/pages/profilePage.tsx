@@ -5,6 +5,7 @@ import { useState } from "react";
 import { FaRegHeart } from "react-icons/fa";
 import ProfileSection from "@/components/profile-section";
 import WishlistSection from "@/components/wishlist-section";
+import Orders from "@/components/orders-section";
 
 const ProfilePage = () => {
   const [personClicked, setPersonClicked] = useState(false);
@@ -32,7 +33,7 @@ const ProfilePage = () => {
                 setWishClicked(false);
                 setOrdersClicked(false);
               }}
-              className={ `-ml-4 bg-amber-500 px-30 py-1 rounded-lg text-slate-800 text-lg border shadow cursor-pointer ${
+              className={`-ml-4 bg-amber-500 px-30 py-1 rounded-lg text-slate-800 text-lg border shadow cursor-pointer ${
                 personClicked && "bg-white"
               }`}
             >
@@ -74,8 +75,9 @@ const ProfilePage = () => {
         </div>
         <div className="w-[990px]">
           {/* <ProfileSection /> */}
-          <WishlistSection />
+          {/* <WishlistSection /> */}
 
+          <Orders />
         </div>
       </div>
     </div>
