@@ -1,8 +1,6 @@
 import { Button } from "./ui/button";
-// import { FaArrowRight } from "react-icons/fa";
 import books from "../assets/books.jpg";
-import { CiHeart, CiStar } from "react-icons/ci";
-import { FaHeart } from "react-icons/fa";
+import { CiHeart } from "react-icons/ci";
 import { FaStar } from "react-icons/fa";
 
 const WishlistSection = () => {
