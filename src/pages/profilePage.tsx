@@ -8,9 +8,10 @@ import WishlistSection from "@/components/wishlist-section";
 import Orders from "@/components/orders-section";
 
 const ProfilePage = () => {
-  const [personClicked, setPersonClicked] = useState(false);
+  const [personClicked, setPersonClicked] = useState(true);
   const [wishClicked, setWishClicked] = useState(false);
   const [ordersClicked, setOrdersClicked] = useState(false);
+  const [isActive, setIsActive] = useState("profile");
 
   return (
     <div className="m-8">
@@ -32,6 +33,7 @@ const ProfilePage = () => {
                 setPersonClicked(true);
                 setWishClicked(false);
                 setOrdersClicked(false);
+                setIsActive("profile");
               }}
               className={`-ml-4 bg-amber-500 px-30 py-1 rounded-lg text-slate-800 text-lg border shadow cursor-pointer ${
                 personClicked && "bg-white"
@@ -48,6 +50,7 @@ const ProfilePage = () => {
                 setWishClicked(true);
                 setOrdersClicked(false);
                 setPersonClicked(false);
+                setIsActive("wishlist");
               }}
               className={`bg-amber-500 px-30 py-1 rounded-lg text-slate-800 text-lg border shadow cursor-pointer ${
                 wishClicked && "bg-white"
@@ -64,6 +67,7 @@ const ProfilePage = () => {
                 setOrdersClicked(true);
                 setPersonClicked(false);
                 setWishClicked(false);
+                setIsActive("orders");
               }}
               className={`bg-amber-500 px-30 py-1 rounded-lg text-slate-800 text-lg border shadow cursor-pointer ${
                 ordersClicked && "bg-white"
@@ -74,10 +78,9 @@ const ProfilePage = () => {
           </div>
         </div>
         <div className="w-[990px]">
-          {/* <ProfileSection /> */}
-          {/* <WishlistSection /> */}
-
-          <Orders />
+          {isActive === "profile" && <ProfileSection />}
+          {isActive === "wishlist" && <WishlistSection />}
+          {isActive === "orders" && <Orders />}
         </div>
       </div>
     </div>
