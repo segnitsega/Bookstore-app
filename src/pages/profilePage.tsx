@@ -4,6 +4,7 @@ import { FiPackage } from "react-icons/fi";
 import { useState } from "react";
 import { FaRegHeart } from "react-icons/fa";
 import ProfileSection from "@/components/profile-section";
+import WishlistSection from "@/components/wishlist-section";
 
 const ProfilePage = () => {
   const [personClicked, setPersonClicked] = useState(false);
@@ -72,7 +73,9 @@ const ProfilePage = () => {
           </div>
         </div>
         <div className="w-[990px]">
-          <ProfileSection />
+          {/* <ProfileSection /> */}
+          <WishlistSection />
+
         </div>
       </div>
     </div>

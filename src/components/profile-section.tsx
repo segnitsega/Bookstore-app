@@ -1,4 +1,3 @@
-import { FcPicture } from "react-icons/fc";
 import { FiSettings} from "react-icons/fi";
 import { Input } from "@/components/ui/input"
 import { Button } from "./ui/button";
