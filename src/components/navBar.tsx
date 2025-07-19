@@ -1,6 +1,7 @@
 import { IoMdBook } from "react-icons/io";
 import { CiSearch, CiShoppingCart } from "react-icons/ci";
 import { FcPicture } from "react-icons/fc";
+import {Link} from "react-router-dom";
 
 const NavBar = () => {
   return (
@@ -10,8 +11,8 @@ const NavBar = () => {
         <h1 className="text-amber-900 font-bold text-2xl">BookHub</h1>
       </div>
       <div className="flex items-center gap-10 text-lg">
-        <span className="hover:text-amber-600 cursor-pointer">Home</span>
-        <span className="hover:text-amber-600 cursor-pointer">Books</span>
+        <span className="hover:text-amber-600 cursor-pointer"><Link to="/">Home</Link></span>
+        <span className="hover:text-amber-600 cursor-pointer"><Link to="/books">Books</Link></span>
       </div>
       <div className="flex items-center py-1 px-2 border-1 border-orange-300 shadow gap-2 rounded-md w-[500px]">
         <CiSearch size={20} className="text-gray-500" />
@@ -23,12 +24,12 @@ const NavBar = () => {
       </div>
       <div className="flex items-center gap-8">
         <div className="relative">
-          <CiShoppingCart size={30} className="text-blue-600 cursor-pointer" />
+          <Link to="cart"><CiShoppingCart size={30} className="text-blue-600 cursor-pointer" /></Link>
           <span className="absolute -top-2 -right-3 w-5 h-5 flex items-center justify-center bg-amber-600 text-white text-sm rounded-lg">
             2
           </span>
         </div>
-        <FcPicture size={35} className="cursor-pointer"/>
+        <Link to="/profile"><FcPicture size={35} className="cursor-pointer"/></Link>
       </div>
     </div>
   );

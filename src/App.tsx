@@ -3,7 +3,6 @@ import LandingPage from "./pages/landingPage";
 import BookDetails from "./pages/bookDetails";
 import CartPage from "./pages/cartPage";
 import ProfilePage from "./pages/profilePage";
-
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./pages/layout";
 
