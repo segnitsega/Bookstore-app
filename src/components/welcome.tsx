@@ -1,11 +1,8 @@
-// import Container from "./container";
 import { Button } from "@/components/ui/button";
 import books from "../assets/books.jpg";
 import { IoMdBook } from "react-icons/io";
 import { CiSearch } from "react-icons/ci";
 import { IoMenuOutline } from "react-icons/io5";
-
-// import { RxHamburgerMenu } from "react-icons/rx";
 
 const Welcome = () => {
   return (
@@ -42,10 +39,10 @@ const Welcome = () => {
               className="outline-none text-xs md:text-lg w-[100px] md:w-[400px]"
             />
           </div>
-          <Button className="text-white bg-amber-600 cursor-pointer">Search</Button>
+          <Button className="text-white bg-amber-600  cursor-pointer border hover:border-blue-500 hover:bg-amber-500">Search</Button>
         </div>
         <div className="flex gap-2">
-          <Button className="text-white bg-amber-600 w-[100px]  md:w-150px] cursor-pointer">
+          <Button className="text-white bg-amber-600 w-[100px]  md:w-150px] cursor-pointer border hover:border-blue-500 hover:bg-amber-500">
             Browse Books
           </Button>
           <Button className="text-blue-500 bg-white border-1 border-amber-200 md:w-[150px] text-xs md:text-lg hover:bg-gray-100 hover:text-gray-800 cursor-pointer"> 
