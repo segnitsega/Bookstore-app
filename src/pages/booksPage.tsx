@@ -26,7 +26,7 @@ const BooksPage = () => {
     }
     getBooks();
   }, []);
-  const firstList = books?.slice(4);
+  const firstList = books?.slice(0, 4);
   const secondList = books?.slice(4);
 
   return (
@@ -60,27 +60,28 @@ const BooksPage = () => {
           <div className="flex gap-6">
             {firstList?.map((book: bookType, index) => (
               <BookCard
-              key={index}
+                key={index}
+                bookId={book.id}
                 bookTitle={book.title}
                 bookUrl={book.imageUrl}
                 bookAuthor={book.author}
                 bookRating={book.bookRating}
                 bookPrice={book.price}
-                discountedPrice={book.price*2}
+                discountedPrice={book.price * 2}
               />
             ))}
           </div>
           <div className="flex gap-6">
             {secondList?.map((book: bookType, index) => (
               <BookCard
-              key={index}
-
+                key={index}
+                bookId={book.id}
                 bookTitle={book.title}
                 bookUrl={book.imageUrl}
                 bookAuthor={book.author}
                 bookRating={book.bookRating}
                 bookPrice={book.price}
-                discountedPrice={book.price*2}
+                discountedPrice={book.price * 2}
               />
             ))}
           </div>
