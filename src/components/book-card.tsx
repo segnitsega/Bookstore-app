@@ -30,7 +30,7 @@ const BookCard = ({
     <div
       className="relative border border-gray-200 rounded-xl flex flex-col overflow-hidden cursor-pointer hover:shadow-lg hover:shadow-blue-100"
     >
-      <Link to={`/books/:${bookId}`}>
+      <Link to={`/books/${bookId}`}>
         <img
           src={bookUrl}
           alt="Book image"
@@ -42,9 +42,9 @@ const BookCard = ({
         size={40}
       />
       <div className="p-2 flex flex-col gap-2">
-        <Link to={`/books/:${bookId}`} className="text-blue-500 font-bold">{bookTitle}</Link >
-        <Link to={`/books/:${bookId}`} className="text-gray-500">{bookAuthor}</Link >
-        <Link to={`/books/:${bookId}`} className="flex">
+        <Link to={`/books/${bookId}`} className="text-blue-500 font-bold">{bookTitle}</Link >
+        <Link to={`/books/${bookId}`} className="text-gray-500">{bookAuthor}</Link >
+        <Link to={`/books/${bookId}`} className="flex">
           {[...Array(5)].map((_, index) => (
             <FaStar
               key={index}
@@ -56,7 +56,7 @@ const BookCard = ({
           ))}
         </Link>
         <div className="flex justify-between">
-          <Link to={`/books/:${bookId}`} className="text-amber-600 font-bold">
+          <Link to={`/books/${bookId}`} className="text-amber-600 font-bold">
             ${bookPrice}{" "}
             <span className="line-through text-gray-500">
               ${discountedPrice}

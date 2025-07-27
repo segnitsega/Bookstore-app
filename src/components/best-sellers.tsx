@@ -19,6 +19,12 @@ export interface bookType {
   featured: boolean;
   bestSellers: boolean;
   bookRating: number;
+  genre: string;
+  pages: number
+  publishedDate: string
+  publisher: string
+  isbn: string
+  reviews: number
 }
 const Bestsellers = () => {
   const url = import.meta.env.VITE_BACKEND_API;
