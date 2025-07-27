@@ -5,18 +5,8 @@ import { FaArrowRight } from "react-icons/fa";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import BookCard from "./book-card";
+import type { bookType } from "./best-sellers";
 
-interface bookType{
-  id: number
-  title:  string
-  author: string
-  price:  number
-  stock: number
-  description: string
-  imageUrl:  string
-  featured: boolean
-  bestSellers: boolean
-}
 
 const FeaturedBooks = () => {
   const url = import.meta.env.VITE_BACKEND_API;
@@ -62,7 +52,7 @@ const FeaturedBooks = () => {
   {error ? <div>Error occured</div> : ""}
         {
           featuredBooks && featuredBooks.map((book: bookType, index: number)=>(
-            <BookCard key={index} bookTitle={book.title} bookUrl={book.imageUrl} bookPrice={book.price} bookAuthor={book.author} discountedPrice={book.price * 2} bookRating={4}/>
+            <BookCard key={index} bookTitle={book.title} bookUrl={book.imageUrl} bookPrice={book.price} bookAuthor={book.author} discountedPrice={book.price * 2} bookRating={book.bookRating}/>
           ))
         }
         

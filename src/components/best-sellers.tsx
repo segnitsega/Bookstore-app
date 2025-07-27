@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import BookCard from "./book-card";
 
-interface bookType {
+export interface bookType {
   id: number;
   title: string;
   author: string;
@@ -18,6 +18,7 @@ interface bookType {
   imageUrl: string;
   featured: boolean;
   bestSellers: boolean;
+  bookRating: number;
 }
 const Bestsellers = () => {
   const url = import.meta.env.VITE_BACKEND_API;
@@ -68,7 +69,7 @@ const Bestsellers = () => {
               bookPrice={book.price}
               bookAuthor={book.author}
               discountedPrice={book.price * 2}
-              bookRating={4}
+              bookRating={book.bookRating}
             />
           ))}
       </div>
