@@ -25,6 +25,7 @@ export interface bookType {
   publisher: string
   isbn: string
   reviews: number
+  bookId: number
 }
 const Bestsellers = () => {
   const url = import.meta.env.VITE_BACKEND_API;
@@ -76,6 +77,7 @@ const Bestsellers = () => {
               bookAuthor={book.author}
               discountedPrice={book.price * 2}
               bookRating={book.bookRating}
+              bookId={book.id}
             />
           ))}
       </div>

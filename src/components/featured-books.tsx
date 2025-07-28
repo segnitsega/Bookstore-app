@@ -52,7 +52,7 @@ const FeaturedBooks = () => {
   {error ? <div>Error occured</div> : ""}
         {
           featuredBooks && featuredBooks.map((book: bookType, index: number)=>(
-            <BookCard key={index} bookTitle={book.title} bookUrl={book.imageUrl} bookPrice={book.price} bookAuthor={book.author} discountedPrice={book.price * 2} bookRating={book.bookRating}/>
+            <BookCard key={index} bookId={book.id} bookTitle={book.title} bookUrl={book.imageUrl} bookPrice={book.price} bookAuthor={book.author} discountedPrice={book.price * 2} bookRating={book.bookRating}/>
           ))
         }
         

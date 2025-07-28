@@ -12,15 +12,19 @@ import type { bookType } from "@/components/best-sellers";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-
+import BookCard from "@/components/book-card";
 
 const BookDetails = () => {
-  const {id} = useParams()
+  const { id } = useParams();
   const url = import.meta.env.VITE_BACKEND_API;
   const [book, setBook] = useState<bookType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | Error | unknown | null>(null);
-
+  const [bookByGenre, setBookByGenre] = useState<bookType | null>(null);
+  const [loadingByGenre, setLoadingByGenre] = useState(true);
+  const [errorByGenre, setErrorByGenre] = useState<
+    string | Error | unknown | null
+  >(null);
 
   useEffect(() => {
     async function getBook() {
@@ -35,6 +39,23 @@ const BookDetails = () => {
     }
     getBook();
   }, []);
+
+  useEffect(() => {
+    async function getBookByGenre(genre: string) {
+      try {
+        const response = await axios(`${url}/api/books/genre/${genre}/?limit=4`);
+        setBookByGenre(response.data.books);
+        setLoadingByGenre(false);
+      } catch (e) {
+        setErrorByGenre(e);
+        setLoadingByGenre(false);
+      }
+    }
+    if (book) {
+      getBookByGenre(book.genre);
+    }
+  }, [book]);
+
   return (
     <div className="m-8">
       <Button className=" bg-amber-500 cursor-pointer w-20 border hover:border-blue-500 hover:bg-amber-600">
@@ -43,29 +64,30 @@ const BookDetails = () => {
       <FaArrowLeft className="relative -top-7 left-1 text-white" />
 
       <div className="flex w-full gap-10">
-        <img src={fansyBook} alt="" className="w-xl rounded-lg shadow" />
+        <img src={book?.imageUrl} alt="" className="w-xl rounded-lg shadow" />
         <div className="flex flex-col gap-4">
           <h1 className="text-slate-800 font-bold text-3xl">{book?.title}</h1>
-          <span className="text-amber-600 text-xl">J.K.Rowling</span>
+          <span className="text-amber-600 text-xl">{book?.author}</span>
           <div className="flex">
             {[...Array(5)].map((_, index) => (
               <FaStar
                 key={index}
                 size={0}
                 className={
-                  index < (book?.bookRating as number) ? "text-yellow-500" : "text-gray-300"
+                  index < (book?.bookRating as number)
+                    ? "text-yellow-500"
+                    : "text-gray-300"
                 }
               />
             ))}
             <p>
-              {book?.bookRating} <span className="text-gray-500">({book?.reviews} reviews)</span>
+             
+              <span className="text-gray-500">({book?.reviews} reviews)</span>
             </p>
           </div>
           <span className="text-amber-600 text-2xl font-bold">$16.99</span>
           <h1 className="text-slate-800 font-bold text-xl">Description</h1>
-          <p className="text-gray-500">
-            {book?.description}
-          </p>
+          <p className="text-gray-500">{book?.description}</p>
 
           <div className="flex flex-col gap-2 p-4 border border-gray-200 rounded-lg shadow mt-4">
             <div className="flex justify-between">
@@ -113,10 +135,26 @@ const BookDetails = () => {
       <div className="border-t border-gray-200 mt-16 mb-10"></div>
 
       <h1 className="text-2xl text-amber-900 font-bold mb-10">
-        More books in {book?.genre}
+        More books on {book?.genre}
       </h1>
 
-      <BookLayout />
+      <div className="flex gap-6">
+        {
+          bookByGenre?.map((book: bookType, i: number) => (
+            <BookCard
+              key={i}
+              bookId={book.id}
+              bookTitle={book.title}
+              bookUrl={book.imageUrl}
+              bookAuthor={book.author}
+              bookRating={book.bookRating}
+              bookPrice={book.price}
+              discountedPrice={book.price * 2}
+            />
+          ))
+        }
+        
+      </div>
     </div>
   );
 };
