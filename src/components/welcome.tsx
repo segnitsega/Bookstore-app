@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
-import books from "../assets/books.jpg";
 import { IoMdBook } from "react-icons/io";
 import { CiSearch } from "react-icons/ci";
 import { IoMenuOutline } from "react-icons/io5";
+import bookoption1 from "../assets/bookoption1.avif";
+
 
 const Welcome = () => {
   return (
@@ -57,7 +58,7 @@ const Welcome = () => {
           <span>10,000+ Books</span>
         </div>
         <img
-          src={books}
+          src={bookoption1}
           alt="books_image" 
           className="rounded-xl w-[270px] md:w-[500px] lg:w-[900px] shadow-lg shadow-blue-100"
         />

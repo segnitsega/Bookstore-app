@@ -2,10 +2,13 @@ import { IoMdBook } from "react-icons/io";
 import { CiSearch, CiShoppingCart } from "react-icons/ci";
 import { FcPicture } from "react-icons/fc";
 import {Link} from "react-router-dom";
+import { useState } from "react";
+import { Button } from "./ui/button";
 
 const NavBar = () => {
+  const [logedIn, setLoggedIn] = useState(false);
   return (
-    <div className="hidden sticky top-0 z-50 bg-white/3  backdrop-blur-lg border-b md:flex items-center justify-between p-4">
+    <div className="hidden sticky top-0 z-50 bg-white/3  backdrop-blur-lg border-b md:flex items-center justify-between p-2">
       <div className="flex items-center gap-1">
         <IoMdBook size={35} className="text-amber-600" />
         <h1 className="text-amber-900 font-bold text-2xl">BookHub</h1>
@@ -29,7 +32,10 @@ const NavBar = () => {
             2
           </span>
         </div>
-        <Link to="/profile"><FcPicture size={35} className="cursor-pointer"/></Link>
+        {
+          logedIn ? <Link to="/profile"><FcPicture size={35} className="cursor-pointer"/></Link> : <Button className="bg-white text-blue-500 border cursor-pointer hover:bg-white hover:border-blue-300">Sign in</Button>
+        }
+        
       </div>
     </div>
   );
