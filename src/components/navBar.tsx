@@ -33,7 +33,7 @@ const NavBar = () => {
           </span>
         </div>
         {
-          logedIn ? <Link to="/profile"><FcPicture size={35} className="cursor-pointer"/></Link> : <Button className="bg-white text-blue-500 border cursor-pointer hover:bg-white hover:border-blue-300">Sign in</Button>
+          logedIn ? <Link to="/profile"><FcPicture size={35} className="cursor-pointer"/></Link> : <Link to="/signin"><Button className="bg-white text-blue-500 border cursor-pointer hover:bg-white hover:border-blue-300">Sign in</Button></Link>
         }
         
       </div>

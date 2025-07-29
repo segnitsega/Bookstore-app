@@ -5,6 +5,7 @@ import CartPage from "./pages/cartPage";
 import ProfilePage from "./pages/profilePage";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./pages/layout";
+import SignIn from "./pages/signin";
 
 const App = () => {
   return (
@@ -17,6 +18,7 @@ const App = () => {
             <Route path="/books/:id" element={<BookDetails />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/signin" element={<SignIn />} />
           </Route>
         </Routes>
       </BrowserRouter>
