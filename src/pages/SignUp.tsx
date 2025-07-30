@@ -4,9 +4,12 @@ import { Link } from "react-router-dom";
 import * as Yup from "yup";
 
 const SignUpSchema = Yup.object().shape({
-  fullName: Yup.string()
-    .min(3, "Name must be at least 3 characters")
-    .required("Full name is required"),
+  firstName: Yup.string()
+    .min(3, "First name must be at least 3 characters")
+    .required("First name is required"),
+  lastName: Yup.string()
+    .min(3, "Last name must be at least 3 characters")
+    .required("Last name is required"),
   email: Yup.string().email("Invalid email").required("Email is required"),
   password: Yup.string()
     .min(6, "Password must be at least 6 characters")
@@ -39,16 +42,32 @@ const SignUp = () => {
         >
           <Form className="space-y-6">
             <div>
-              <label htmlFor="fullName" className="block text-sm font-medium">
-                Full Name
+              <label htmlFor="firstName" className="block text-sm font-medium">
+                First Name
               </label>
               <Field
-                name="fullName"
+                name="firstName"
                 type="text"
                 className="mt-1 w-full border border-amber-300 px-3 py-1 rounded-md "
               />
               <ErrorMessage
-                name="fullName"
+                name="firstName"
+                component="div"
+                className="text-red-500 text-sm mt-1"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="lastName" className="block text-sm font-medium">
+                Last Name
+              </label>
+              <Field
+                name="lastName"
+                type="text"
+                className="mt-1 w-full border border-amber-300 px-3 py-1 rounded-md "
+              />
+              <ErrorMessage
+                name="lastName"
                 component="div"
                 className="text-red-500 text-sm mt-1"
               />
@@ -86,7 +105,10 @@ const SignUp = () => {
               />
             </div>
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium"
+              >
                 Confirm Password
               </label>
               <Field
@@ -116,7 +138,10 @@ const SignUp = () => {
           </span>
           <span className="text-gray-500 text-sm">
             Already have an account?
-            <Link to="/signin" className="text-amber-600 cursor-pointer"> Sign In</Link>
+            <Link to="/signin" className="text-amber-600 cursor-pointer">
+              {" "}
+              Sign In
+            </Link>
           </span>
         </div>
       </div>
