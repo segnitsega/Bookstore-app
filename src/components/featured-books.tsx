@@ -6,7 +6,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import BookCard from "./book-card";
 import type { bookType } from "./best-sellers";
-
+import spinner from "../assets/spinner.svg";
 
 const FeaturedBooks = () => {
   const url = import.meta.env.VITE_BACKEND_API;
@@ -30,7 +30,6 @@ const FeaturedBooks = () => {
     getFeaturedBooks();
   }, []);
 
-
   return (
     <div className="mx-8 mb-12">
       <div className="flex justify-between">
@@ -47,15 +46,29 @@ const FeaturedBooks = () => {
       </div>
 
       <div className="flex flex-col md:flex-row gap-6">
-
-   {loading && <div>Loading...</div>}
-  {error ? <div>Error occured</div> : ""}
-        {
-          featuredBooks && featuredBooks.map((book: bookType, index: number)=>(
-            <BookCard key={index} bookId={book.id} bookTitle={book.title} bookUrl={book.imageUrl} bookPrice={book.price} bookAuthor={book.author} discountedPrice={book.price * 2} bookRating={book.bookRating}/>
-          ))
-        }
-        
+        {loading && (
+          <img src={spinner} alt="Loading..." className="w-20 h-20 mx-auto" />
+        )}
+        {error ? (
+          <div className="mx-auto bg-red-100 text-red-800 px-4 py-2 rounded-md text-sm">
+            ⚠️ Error fetching books. Please refresh and try again.
+          </div>
+        ) : (
+          ""
+        )}
+        {featuredBooks &&
+          featuredBooks.map((book: bookType, index: number) => (
+            <BookCard
+              key={index}
+              bookId={book.id}
+              bookTitle={book.title}
+              bookUrl={book.imageUrl}
+              bookPrice={book.price}
+              bookAuthor={book.author}
+              discountedPrice={book.price * 2}
+              bookRating={book.bookRating}
+            />
+          ))}
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import { FaArrowRight } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import BookCard from "./book-card";
+import spinner from "../assets/spinner.svg";
 
 export interface bookType {
   id: number;
@@ -20,12 +21,12 @@ export interface bookType {
   bestSellers: boolean;
   bookRating: number;
   genre: string;
-  pages: number
-  publishedDate: string
-  publisher: string
-  isbn: string
-  reviews: number
-  bookId: number
+  pages: number;
+  publishedDate: string;
+  publisher: string;
+  isbn: string;
+  reviews: number;
+  bookId: number;
 }
 const Bestsellers = () => {
   const url = import.meta.env.VITE_BACKEND_API;
@@ -48,8 +49,6 @@ const Bestsellers = () => {
     }
     getbestsellersBook();
   }, []);
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error occured</div>;
   return (
     <div className="mx-8 bg-amber-50 py-2 md:py-20 px-4  mb-10 rounded-md">
       <div className="flex flex-col md:flex-row justify-between">
@@ -65,8 +64,17 @@ const Bestsellers = () => {
         </div>
       </div>
       <div className="flex flex-col md:flex-row gap-6">
-        {loading && <div>Loading...</div>}
-        {error ? <div>Error occured</div> : ""}
+        {loading && (
+          <img src={spinner} alt="Loading..." className="w-20 h-20 mx-auto" />
+        )}
+
+        {error ? (
+          <div className="mx-auto bg-red-100 text-red-800 px-4 py-2 rounded-md text-sm">
+            ⚠️ Error fetching books. Please refresh and try again.
+          </div>
+        ) : (
+          ""
+        )}
         {bestsellersBook &&
           bestsellersBook.map((book: bookType, index: number) => (
             <BookCard
