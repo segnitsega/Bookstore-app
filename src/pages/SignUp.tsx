@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import axios from "axios";
 import { ErrorMessage, Field, Formik, Form } from "formik";
 import { Link } from "react-router-dom";
 import * as Yup from "yup";
@@ -20,8 +21,10 @@ const SignUpSchema = Yup.object().shape({
 });
 
 const SignUp = () => {
+  const url = import.meta.env.VITE_BACKEND_API;
+
   return (
-    <div className="h-screen flex items-center mb-10  justify-center ">
+    <div className="h-screen flex items-center mb-10 mt-8 justify-center ">
       <div className=" border border-gray-300 rounded-lg p-6 shadow w-[500px]">
         <div className="flex flex-col items-center mb-6">
           <h1 className="text-amber-900 text-3xl font-bold mb-2">
@@ -33,11 +36,28 @@ const SignUp = () => {
         </div>
 
         <Formik
-          initialValues={{ email: "", password: "" }}
+          initialValues={{
+            email: "",
+            password: "",
+            firstName: "",
+            lastName: "",
+            confirmPassword: "",
+          }}
           validationSchema={SignUpSchema}
-          onSubmit={(values) => {
+          onSubmit={async (values, {setSubmitting}) => {
             console.log("Form data:", values);
-            // Handle sign-in logic here
+            console.log(url)
+              try {
+                const response = await axios.post(
+                  `${url}/api/user/signup`,
+                  values
+                );
+                console.log("Sign up successful:", response.data);
+              } catch (error) {
+                console.error("Error during sign up:", error);
+              }finally{
+                setSubmitting(false);
+              }
           }}
         >
           <Form className="space-y-6">
@@ -127,7 +147,7 @@ const SignUp = () => {
               type="submit"
               className="w-full bg-amber-600 hover:bg-amber-600 cursor-pointer"
             >
-              Sign In
+              Sign up
             </Button>
           </Form>
         </Formik>
@@ -139,7 +159,6 @@ const SignUp = () => {
           <span className="text-gray-500 text-sm">
             Already have an account?
             <Link to="/signin" className="text-amber-600 cursor-pointer">
-              {" "}
               Sign In
             </Link>
           </span>
