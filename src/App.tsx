@@ -6,6 +6,7 @@ import ProfilePage from "./pages/profilePage";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./pages/layout";
 import SignIn from "./pages/signin";
+import StartPage from "./pages/startPage";
 import SignUp from "./pages/SignUp";
 
 const App = () => {
@@ -13,6 +14,7 @@ const App = () => {
     <div>
       <BrowserRouter>
         <Routes>
+          <Route path="/signup" element={<StartPage />} />
           <Route path="/" element={<Layout />}>
             <Route index element={<LandingPage />} />
             <Route path="/books" element={<BooksPage />} />

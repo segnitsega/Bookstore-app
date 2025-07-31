@@ -1,18 +1,53 @@
 import { FcPicture } from "react-icons/fc";
 import { BsPerson } from "react-icons/bs";
 import { FiPackage } from "react-icons/fi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaRegHeart } from "react-icons/fa";
 import ProfileSection from "@/components/profile-section";
 import WishlistSection from "@/components/wishlist-section";
 import Orders from "@/components/orders-section";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
+interface userType {
+  id: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+}
 
 const ProfilePage = () => {
+  const url = import.meta.env.VITE_API_URL;
   const [personClicked, setPersonClicked] = useState(true);
   const [wishClicked, setWishClicked] = useState(false);
   const [ordersClicked, setOrdersClicked] = useState(false);
   const [isActive, setIsActive] = useState("profile");
 
+  const token = localStorage.getItem("token");
+  const userID = token ? JSON.parse(atob(token.split(".")[1])).userId : null;
+
+  console.log("User ID:", userID);
+  
+  const [user, setUser] = useState<userType | null>(null);
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!localStorage.getItem("token")) {
+      navigate("/signin");
+    }
+    async function getUserData() {
+      try {
+        const response = await axios.get(`${url}/api/user/${userID}`);
+        setUser(response.data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        // navigate("/signin");
+      }
+    }
+    getUserData();
+  }, []);
+
+  console.log("User data:", user);
   return (
     <div className="m-8">
       <div className="flex gap-4">

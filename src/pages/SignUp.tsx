@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
-import axios from "axios";
+// import axios from "axios";
 import { ErrorMessage, Field, Formik, Form } from "formik";
+// import { Link, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import * as Yup from "yup";
 
@@ -21,17 +22,16 @@ const SignUpSchema = Yup.object().shape({
 });
 
 const SignUp = () => {
-  const url = import.meta.env.VITE_BACKEND_API;
+  // const url = import.meta.env.VITE_BACKEND_API;
+  // const navigate = useNavigate();
 
   return (
-    <div className="h-screen flex items-center mb-10 mt-8 justify-center ">
-      <div className=" border border-gray-300 rounded-lg p-6 shadow w-[500px]">
+    <div className="flex items-center justify-center bg-white rounded-lg">
+      <div className=" rounded-lg p-6 shadow-md w-[500px]">
         <div className="flex flex-col items-center mb-6">
-          <h1 className="text-amber-900 text-3xl font-bold mb-2">
-            Create Account
-          </h1>
+          <h1 className="text- text-3xl font-bold mb-2">Create Your Account</h1>
           <span className="text-gray-500">
-            Join BookHub to start your reading journey
+            Start your literary journey with us today
           </span>
         </div>
 
@@ -44,53 +44,62 @@ const SignUp = () => {
             confirmPassword: "",
           }}
           validationSchema={SignUpSchema}
-          onSubmit={async (values, {setSubmitting}) => {
+          onSubmit={async (values) => {
             console.log("Form data:", values);
-            console.log(url)
-              try {
-                const response = await axios.post(
-                  `${url}/api/user/signup`,
-                  values
-                );
-                console.log("Sign up successful:", response.data);
-              } catch (error) {
-                console.error("Error during sign up:", error);
-              }finally{
-                setSubmitting(false);
-              }
+            // console.log(url);
+            // try {
+            //   const response = await axios.post(
+            //     `${url}/api/user/signup`,
+            //     values
+            //   );
+            //   localStorage.setItem("token", response.data.token);
+            //   navigate("/");
+            //   console.log("Sign up successful:", response.data);
+            // } catch (error) {
+            //   console.error("Error during sign up:", error);
+            // } finally {
+            //   setSubmitting(false);
+            // }
           }}
         >
           <Form className="space-y-6">
-            <div>
-              <label htmlFor="firstName" className="block text-sm font-medium">
-                First Name
-              </label>
-              <Field
-                name="firstName"
-                type="text"
-                className="mt-1 w-full border border-amber-300 px-3 py-1 rounded-md "
-              />
-              <ErrorMessage
-                name="firstName"
-                component="div"
-                className="text-red-500 text-sm mt-1"
-              />
-            </div>
+            <div className="flex gap-2">
+              <div>
+                <label
+                  htmlFor="firstName"
+                  className="block text-sm font-medium"
+                >
+                  First Name
+                </label>
+                <Field
+                  name="firstName"
+                  type="text"
+                  placeholder="Segni"
+                  className="mt-1 w-full border border-gray-300 px-3 py-2 rounded-md "
+                />
+                <ErrorMessage
+                  name="firstName"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
+              </div>
 
-            <div>
-              <label htmlFor="lastName" className="block text-sm font-medium">
-                Last Name
-              </label>
-              <Field
-                name="lastName"
-                type="text"
-                className="mt-1 w-full border border-amber-300 px-3 py-1 rounded-md "
-              />
-              <ErrorMessage
-                name="lastName"
-                component="div"
-                className="text-red-500 text-sm mt-1"
-              />
+              <div>
+                <label htmlFor="lastName" className="block text-sm font-medium">
+                  Last Name
+                </label>
+                <Field
+                  name="lastName"
+                  type="text"
+                  placeholder="Tsega"
+                  className="mt-1 w-full border border-gray-300 px-3 py-2 rounded-md "
+                />
+                <ErrorMessage
+                  name="lastName"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
+              </div>
             </div>
 
             <div>
@@ -100,7 +109,8 @@ const SignUp = () => {
               <Field
                 name="email"
                 type="email"
-                className="mt-1 w-full border border-amber-300 px-3 py-1 rounded-md "
+                placeholder="segni@gmail.com"
+                className="mt-1 w-full border border-gray-300 px-3 py-2 rounded-md "
               />
               <ErrorMessage
                 name="email"
@@ -116,7 +126,8 @@ const SignUp = () => {
               <Field
                 name="password"
                 type="password"
-                className="mt-1 w-full border border-amber-300 px-3 py-1 rounded-md"
+                placeholder="create password"
+                className="mt-1 w-full border border-gray-300 px-3 py-2 rounded-md"
               />
               <ErrorMessage
                 name="password"
@@ -134,7 +145,9 @@ const SignUp = () => {
               <Field
                 name="confirmPassword"
                 type="password"
-                className="mt-1 w-full border border-amber-300 px-3 py-1 rounded-md"
+                  placeholder="confirm password"
+
+                className="mt-1 w-full border border-gray-300 px-3 py-2 rounded-md"
               />
               <ErrorMessage
                 name="confirmPassword"
@@ -152,16 +165,14 @@ const SignUp = () => {
           </Form>
         </Formik>
 
-        <div className="flex flex-col gap-2 mt-2 items-center ">
-          <span className="text-amber-600 text-sm cursor-pointer">
-            Forgot your password?
-          </span>
-          <span className="text-gray-500 text-sm">
+        <div className="flex flex-col gap-2 mt-8 items-center border-t pt-2">
+        
+          <span className="text-gray-500 ">
             Already have an account?
-            <Link to="/signin" className="text-amber-600 cursor-pointer">
-              Sign In
-            </Link>
+            <span className="text-amber-600 cursor-pointer"> Sign In Here</span>
           </span>
+
+          <p className="text-gray-500 text-center my-4">By creating an account, you agree to our <span className="text-amber-500">Terms of Service</span> and <span className="text-amber-500">Privacy Policy</span></p>
         </div>
       </div>
     </div>
