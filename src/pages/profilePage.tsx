@@ -1,4 +1,3 @@
-import { FcPicture } from "react-icons/fc";
 import { BsPerson } from "react-icons/bs";
 import { FiPackage } from "react-icons/fi";
 import { useEffect, useState } from "react";
@@ -6,8 +5,10 @@ import { FaRegHeart } from "react-icons/fa";
 import ProfileSection from "@/components/profile-section";
 import WishlistSection from "@/components/wishlist-section";
 import Orders from "@/components/orders-section";
+import { CgProfile } from "react-icons/cg";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import spinner from "../assets/spinner.svg";
 
 interface userType {
   id: number;
@@ -18,36 +19,52 @@ interface userType {
 }
 
 const ProfilePage = () => {
-  const url = import.meta.env.VITE_API_URL;
+  const navigate = useNavigate();
+  const url = import.meta.env.VITE_BACKEND_API;
   const [personClicked, setPersonClicked] = useState(true);
   const [wishClicked, setWishClicked] = useState(false);
   const [ordersClicked, setOrdersClicked] = useState(false);
   const [isActive, setIsActive] = useState("profile");
+  const [user, setUser] = useState<userType | null>(null);
+  const [loading, setLoading] = useState(true);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/signin");
+      return;
+    }
+    const userID = JSON.parse(atob(token.split(".")[1])).id;
 
- 
-  // useEffect(() => {
-  //   if (!localStorage.getItem("token")) {
-  //     navigate("/signin");
-  //   }
-  //   async function getUserData() {
-  //     try {
-  //       const response = await axios.get(`${url}/api/user/${userID}`);
-  //       setUser(response.data);
-  //     } catch (error) {
-  //       console.error("Error fetching user data:", error);
-  //       // navigate("/signin");
-  //     }
-  //   }
-  //   getUserData();
-  // }, []);
-
+    async function getUserData() {
+      try {
+        const response = await axios.get(`${url}/api/user/${userID}`);
+        console.log(`${url}/api/user/${userID}`);
+        setUser(response.data.user);
+        setLoading(false);
+        console.log("User data:", response.data.user);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        setLoading(false);
+      }
+    }
+    getUserData();
+  }, []);
+  // console.log(user) // loggin null
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <img src={spinner} alt="Loading..." />
+      </div>
+    );
+  }
   return (
     <div className="m-8">
       <div className="flex gap-4">
-        <FcPicture size={50} className="rounded-lg" />
+        <CgProfile size={50} className="text-slate-700" />
         <div>
-          <h1 className="text-2xl font-bold">John Doe</h1>
-          <span className="text-gray-500">john.doe@example.com</span>
+          <h1 className="text-2xl font-bold">{`${user?.firstName} ${user?.lastName}`}</h1>
+          <span className="text-gray-500">{user?.email}</span>
         </div>
       </div>
 
