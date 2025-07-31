@@ -1,8 +1,7 @@
 import { Button } from "@/components/ui/button";
-// import axios from "axios";
+import axios from "axios";
 import { ErrorMessage, Field, Formik, Form } from "formik";
-// import { Link, useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 
 const SignUpSchema = Yup.object().shape({
@@ -22,8 +21,8 @@ const SignUpSchema = Yup.object().shape({
 });
 
 const SignUp = () => {
-  // const url = import.meta.env.VITE_BACKEND_API;
-  // const navigate = useNavigate();
+  const url = import.meta.env.VITE_BACKEND_API;
+  const navigate = useNavigate();
 
   return (
     <div className="flex items-center justify-center bg-white rounded-lg">
@@ -44,22 +43,22 @@ const SignUp = () => {
             confirmPassword: "",
           }}
           validationSchema={SignUpSchema}
-          onSubmit={async (values) => {
+          onSubmit={async (values, {setSubmitting}) => {
             console.log("Form data:", values);
-            // console.log(url);
-            // try {
-            //   const response = await axios.post(
-            //     `${url}/api/user/signup`,
-            //     values
-            //   );
-            //   localStorage.setItem("token", response.data.token);
-            //   navigate("/");
-            //   console.log("Sign up successful:", response.data);
-            // } catch (error) {
-            //   console.error("Error during sign up:", error);
-            // } finally {
-            //   setSubmitting(false);
-            // }
+            console.log(url);
+            try {
+              const response = await axios.post(
+                `${url}/api/user/signup`,
+                values
+              );
+              localStorage.setItem("token", response.data.token);
+              navigate("/dashboard");
+              console.log("Sign up successful:", response.data);
+            } catch (error) {
+              console.error("Error during sign up:", error);
+            } finally {
+              setSubmitting(false);
+            }
           }}
         >
           <Form className="space-y-6">
@@ -169,7 +168,7 @@ const SignUp = () => {
         
           <span className="text-gray-500 ">
             Already have an account?
-            <span className="text-amber-600 cursor-pointer"> Sign In Here</span>
+            <Link to="/signin" className="text-amber-600 cursor-pointer"> Sign In Here</Link>
           </span>
 
           <p className="text-gray-500 text-center my-4">By creating an account, you agree to our <span className="text-amber-500">Terms of Service</span> and <span className="text-amber-500">Privacy Policy</span></p>

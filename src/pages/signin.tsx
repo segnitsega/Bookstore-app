@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
+import axios from "axios";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 
 const SignInSchema = Yup.object().shape({
@@ -11,20 +12,32 @@ const SignInSchema = Yup.object().shape({
 });
 
 const SignIn = () => {
+  const url = import.meta.env.VITE_BACKEND_API;
+  const navigate = useNavigate();
+
   return (
-    <div className="h-screen flex items-center -mt-14 justify-center ">
-      <div className=" border border-gray-300 rounded-lg p-6 shadow w-[500px]">
+    <div className="h-screen flex p-10 justify-center ">
+      <div className=" rounded-lg p-6 shadow-md w-[500px]">
         <div className="flex flex-col items-center mb-6">
-          <h1 className="text-amber-900 text-3xl font-bold mb-2">Sign In</h1>
+          <h1 className=" text-3xl font-bold mb-2">Sign In</h1>
           <span className="text-gray-500">Welcome back to BookHub</span>
         </div>
 
         <Formik
           initialValues={{ email: "", password: "" }}
           validationSchema={SignInSchema}
-          onSubmit={(values) => {
+          onSubmit={async (values, { setSubmitting }) => {
             console.log("Form data:", values);
-            // Handle sign-in logic here
+            try {
+              const response = await axios.post(`${url}/api/user/login`, values);
+              localStorage.setItem("token", response.data.token);
+              navigate("/dashboard");
+              console.log("Sign in successful:", response.data);
+            } catch (error) {
+              console.log(error);
+            } finally {
+              setSubmitting(false);
+            }
           }}
         >
           <Form className="space-y-6">
@@ -35,7 +48,7 @@ const SignIn = () => {
               <Field
                 name="email"
                 type="email"
-                className="mt-1 w-full border border-amber-300 px-3 py-1 rounded-md "
+                className="mt-1 w-full border border-gray-300 px-3 py-1 rounded-md "
               />
               <ErrorMessage
                 name="email"
@@ -51,7 +64,7 @@ const SignIn = () => {
               <Field
                 name="password"
                 type="password"
-                className="mt-1 w-full border border-amber-300 px-3 py-1 rounded-md"
+                className="mt-1 w-full border border-gray-300 px-3 py-1 rounded-md"
               />
               <ErrorMessage
                 name="password"
@@ -60,7 +73,10 @@ const SignIn = () => {
               />
             </div>
 
-            <Button type="submit" className="w-full bg-amber-600 hover:bg-amber-600 cursor-pointer">
+            <Button
+              type="submit"
+              className="w-full bg-amber-600 hover:bg-amber-600 cursor-pointer"
+            >
               Sign In
             </Button>
           </Form>
@@ -71,7 +87,10 @@ const SignIn = () => {
             Forgot your password?
           </span>
           <span className="text-gray-500 text-sm">
-            Don't have an account? <Link to="/signup" className="text-amber-600 cursor-pointer">Sign up</Link>
+            Don't have an account?{" "}
+            <Link to="/" className="text-amber-600 cursor-pointer">
+              Sign up
+            </Link>
           </span>
         </div>
       </div>

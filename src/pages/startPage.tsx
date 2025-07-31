@@ -16,7 +16,6 @@ const StartPage = () => {
         <div className="my-8">
            <SignUp /> 
         </div>
-
         <p className="mb-2 text-gray-700 text-center">
             ✨ Join thousands of readers who have found their next favorite book with us ✨
         </p>
