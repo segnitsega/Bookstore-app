@@ -51,7 +51,7 @@ const SignUp = () => {
                 `${url}/api/user/signup`,
                 values
               );
-              localStorage.setItem("token", response.data.token);
+              localStorage.setItem("token", response.data.accessToken);
               navigate("/dashboard");
               console.log("Sign up successful:", response.data);
             } catch (error) {
