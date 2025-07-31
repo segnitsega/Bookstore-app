@@ -1,20 +1,9 @@
 import { IoMdBook } from "react-icons/io";
 import { CiSearch, CiShoppingCart } from "react-icons/ci";
-import { FcPicture } from "react-icons/fc";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { Button } from "./ui/button";
+import { CgProfile } from "react-icons/cg";
 
 const NavBar = () => {
-  const [logedIn, setLoggedIn] = useState(false);
-
-  useEffect(() => {
-    if (localStorage.getItem("token")) {
-      setLoggedIn(true);
-    }
-  }, []);
-
-  console.log("Loged in status:", logedIn);
   return (
     <div className="hidden sticky top-0 z-50 bg-white/3  backdrop-blur-lg border-b md:flex items-center justify-between p-2">
       <div className="flex items-center gap-1">
@@ -23,10 +12,10 @@ const NavBar = () => {
       </div>
       <div className="flex items-center gap-10 text-lg">
         <span className="hover:text-amber-600 cursor-pointer">
-          <Link to="/">Home</Link>
+          <Link to="/dashboard">Home</Link>
         </span>
         <span className="hover:text-amber-600 cursor-pointer">
-          <Link to="/books">Books</Link>
+          <Link to="books">Books</Link>
         </span>
       </div>
       <div className="flex items-center py-1 px-2 border-1 border-orange-300 shadow gap-2 rounded-md w-[500px]">
@@ -49,17 +38,9 @@ const NavBar = () => {
             2
           </span>
         </div>
-        {logedIn ? (
-          <Link to="/profile">
-            <FcPicture size={35} className="cursor-pointer" />
-          </Link>
-        ) : (
-          <Link to="/signin">
-            <Button className="bg-white text-blue-500 border cursor-pointer hover:bg-white hover:border-blue-300">
-              Sign in
-            </Button>
-          </Link>
-        )}
+        <Link to="profile">
+          <CgProfile size={30} className="text-slate-700  cursor-pointer" />
+        </Link>
       </div>
     </div>
   );

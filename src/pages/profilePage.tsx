@@ -24,30 +24,23 @@ const ProfilePage = () => {
   const [ordersClicked, setOrdersClicked] = useState(false);
   const [isActive, setIsActive] = useState("profile");
 
-  const token = localStorage.getItem("token");
-  const userID = token ? JSON.parse(atob(token.split(".")[1])).userId : null;
+ 
+  // useEffect(() => {
+  //   if (!localStorage.getItem("token")) {
+  //     navigate("/signin");
+  //   }
+  //   async function getUserData() {
+  //     try {
+  //       const response = await axios.get(`${url}/api/user/${userID}`);
+  //       setUser(response.data);
+  //     } catch (error) {
+  //       console.error("Error fetching user data:", error);
+  //       // navigate("/signin");
+  //     }
+  //   }
+  //   getUserData();
+  // }, []);
 
-  console.log("User ID:", userID);
-  
-  const [user, setUser] = useState<userType | null>(null);
-  const navigate = useNavigate();
-  useEffect(() => {
-    if (!localStorage.getItem("token")) {
-      navigate("/signin");
-    }
-    async function getUserData() {
-      try {
-        const response = await axios.get(`${url}/api/user/${userID}`);
-        setUser(response.data);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        // navigate("/signin");
-      }
-    }
-    getUserData();
-  }, []);
-
-  console.log("User data:", user);
   return (
     <div className="m-8">
       <div className="flex gap-4">
