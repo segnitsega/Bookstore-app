@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { CiSearch } from "react-icons/ci";
 import Filter from "@/components/filter-component";
-import BookLayout from "@/components/book-layout";
 import BookCard from "@/components/book-card";
 import type { bookType } from "@/components/best-sellers";
 import { useEffect, useState } from "react";
@@ -27,8 +26,6 @@ const BooksPage = () => {
     }
     getBooks();
   }, []);
-  const firstList = books?.slice(0, 4);
-  const secondList = books?.slice(4);
 
   return (
     <div className="overflow-x-hidden p-2 md:p-8">
@@ -81,34 +78,6 @@ const BooksPage = () => {
                 discountedPrice={book.price * 2}
               />
             ))}
-          {/* <div className="flex gap-6">
-            {firstList?.map((book: bookType, index) => (
-              <BookCard
-                key={index}
-                bookId={book.id}
-                bookTitle={book.title}
-                bookUrl={book.imageUrl}
-                bookAuthor={book.author}
-                bookRating={book.bookRating}
-                bookPrice={book.price}
-                discountedPrice={book.price * 2}
-              />
-            ))}
-          </div>
-          <div className="flex gap-6">
-            {secondList?.map((book: bookType, index) => (
-              <BookCard
-                key={index}
-                bookId={book.id}
-                bookTitle={book.title}
-                bookUrl={book.imageUrl}
-                bookAuthor={book.author}
-                bookRating={book.bookRating}
-                bookPrice={book.price}
-                discountedPrice={book.price * 2}
-              />
-            ))}
-          </div> */}
         </div>
       </div>
     </div>
