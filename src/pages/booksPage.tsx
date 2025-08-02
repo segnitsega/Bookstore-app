@@ -6,6 +6,7 @@ import BookCard from "@/components/book-card";
 import type { bookType } from "@/components/best-sellers";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import spinner from "../assets/spinner.svg";
 
 const BooksPage = () => {
   const url = import.meta.env.VITE_BACKEND_API;
@@ -56,8 +57,31 @@ const BooksPage = () => {
           <Filter />
         </div>
 
-        <div className="flex flex-col gap-8">
-          <div className="flex gap-6">
+        {loading && (
+          <img src={spinner} alt="Loading..." className="w-20 h-20 mx-auto " />
+        )}
+        {error ? (
+          <div className="mx-auto bg-red-100 text-red-800 px-4 py-2 rounded-md text-sm">
+            ⚠️ Error fetching books. Please refresh and try again.
+          </div>
+        ) : (
+          ""
+        )}
+        <div className="grid grid-cols-4 grid-row-2 gap-4">
+          {books &&
+            books.map((book: bookType, index) => (
+              <BookCard
+                key={index}
+                bookId={book.id}
+                bookTitle={book.title}
+                bookUrl={book.imageUrl}
+                bookAuthor={book.author}
+                bookRating={book.bookRating}
+                bookPrice={book.price}
+                discountedPrice={book.price * 2}
+              />
+            ))}
+          {/* <div className="flex gap-6">
             {firstList?.map((book: bookType, index) => (
               <BookCard
                 key={index}
@@ -84,7 +108,7 @@ const BooksPage = () => {
                 discountedPrice={book.price * 2}
               />
             ))}
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
