@@ -8,6 +8,7 @@ import Layout from "./pages/layout";
 import SignIn from "./pages/signin";
 import StartPage from "./pages/startPage";
 import SignUp from "./pages/SignUp";
+import ProtectedRoute from "./utils/protectedRoute";
 
 const App = () => {
   return (
@@ -17,14 +18,14 @@ const App = () => {
           <Route path="/" element={<StartPage />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
-
-
-          <Route path="/dashboard" element={<Layout />}>
-            <Route index element={<LandingPage />} />
-            <Route path="books" element={<BooksPage />} />
-            <Route path="books/:id" element={<BookDetails />} />
-            <Route path="cart" element={<CartPage />} />
-            <Route path="profile" element={<ProfilePage />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<Layout />}>
+              <Route index element={<LandingPage />} />
+              <Route path="books" element={<BooksPage />} />
+              <Route path="books/:id" element={<BookDetails />} />
+              <Route path="cart" element={<CartPage />} />
+              <Route path="profile" element={<ProfilePage />} />
+            </Route>
           </Route>
         </Routes>
       </BrowserRouter>

@@ -67,7 +67,7 @@ const ProfilePage = () => {
           <span className="text-gray-500">{user?.email}</span>
         </div>
       </div>
-
+     
       <div className="flex flex-col gap-4">
         {/* buttons */}
         <div className="mt-8 flex">
