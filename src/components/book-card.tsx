@@ -63,7 +63,7 @@ const BookCard = ({
             </span>
           </Link >
           <Button className="bg-white text-gray-500 border border-amber-200 hover:bg-gray-100 hover:text-gray-800 cursor-pointer">
-            In Cart
+            Add to Cart
           </Button>
         </div>
       </div>

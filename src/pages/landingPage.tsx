@@ -7,11 +7,13 @@ import UpdateSection from "../components/update-section";
 const LandingPage = () => {
   return (
     <div>
-      <Welcome />
-      <Card />
-      <FeaturedBooks />
-      <Bestsellers />
-      <UpdateSection />
+      <div>
+        <Welcome />
+        <Card />
+        <FeaturedBooks />
+        <Bestsellers />
+        <UpdateSection />
+      </div>
     </div>
   );
 };

@@ -7,7 +7,6 @@ import { HiOutlineBookOpen } from "react-icons/hi2";
 import { SlCalender } from "react-icons/sl";
 import { CiShoppingCart } from "react-icons/ci";
 import { FaHeart } from "react-icons/fa";
-import BookLayout from "@/components/book-layout";
 import type { bookType } from "@/components/best-sellers";
 import { useEffect, useState } from "react";
 import axios from "axios";
