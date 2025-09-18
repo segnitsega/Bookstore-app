@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       return;
     }
     try {
-      const verified = await axios.get(`${url}/token `, {
+      const verified = await axios.get(`${url}/protected `, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!verified) {
@@ -28,16 +28,27 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     } catch (e) {
       setIsAuthenticated(false);
       console.log(e)
+    }finally{
+      setLoading(false);
     }
-    setLoading(false);
   };
+
+  const login = (token: string) =>{
+    localStorage.setItem("token", token)
+    setIsAuthenticated(true)
+  }
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    setIsAuthenticated(false);
+  }
 
   useEffect(() => {
     verifyToken();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, loading }}>
+    <AuthContext.Provider value={{ isAuthenticated, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

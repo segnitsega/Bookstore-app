@@ -3,6 +3,7 @@ import axios from "axios";
 import { ErrorMessage, Field, Formik, Form } from "formik";
 import { Link, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
+import { useAuth } from "@/contexts/authContext";
 
 const SignUpSchema = Yup.object().shape({
   firstName: Yup.string()
@@ -23,6 +24,7 @@ const SignUpSchema = Yup.object().shape({
 const SignUp = () => {
   const url = import.meta.env.VITE_BACKEND_API;
   const navigate = useNavigate();
+  const {login} = useAuth();
 
   return (
     <div className="flex items-center justify-center bg-white rounded-lg">
@@ -43,7 +45,7 @@ const SignUp = () => {
             confirmPassword: "",
           }}
           validationSchema={SignUpSchema}
-          onSubmit={async (values, {setSubmitting}) => {
+          onSubmit={async (values, { setSubmitting }) => {
             console.log("Form data:", values);
             console.log(url);
             try {
@@ -51,7 +53,7 @@ const SignUp = () => {
                 `${url}/api/user/signup`,
                 values
               );
-              localStorage.setItem("token", response.data.accessToken);
+              login(response.data.accessToken)
               navigate("/dashboard");
               console.log("Sign up successful:", response.data);
             } catch (error) {
@@ -61,117 +63,128 @@ const SignUp = () => {
             }
           }}
         >
-          <Form className="space-y-6">
-            <div className="flex gap-2">
+          {({ isSubmitting }) => (
+            <Form className="space-y-6">
+              <div className="flex gap-2">
+                <div>
+                  <label
+                    htmlFor="firstName"
+                    className="block text-sm font-medium"
+                  >
+                    First Name
+                  </label>
+                  <Field
+                    name="firstName"
+                    type="text"
+                    placeholder="Segni"
+                    className="mt-1 w-full border border-gray-300 px-3 py-2 rounded-md "
+                  />
+                  <ErrorMessage
+                    name="firstName"
+                    component="div"
+                    className="text-red-500 text-sm mt-1"
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="lastName"
+                    className="block text-sm font-medium"
+                  >
+                    Last Name
+                  </label>
+                  <Field
+                    name="lastName"
+                    type="text"
+                    placeholder="Tsega"
+                    className="mt-1 w-full border border-gray-300 px-3 py-2 rounded-md "
+                  />
+                  <ErrorMessage
+                    name="lastName"
+                    component="div"
+                    className="text-red-500 text-sm mt-1"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium">
+                  Email
+                </label>
+                <Field
+                  name="email"
+                  type="email"
+                  placeholder="segni@gmail.com"
+                  className="mt-1 w-full border border-gray-300 px-3 py-2 rounded-md "
+                />
+                <ErrorMessage
+                  name="email"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium">
+                  Password
+                </label>
+                <Field
+                  name="password"
+                  type="password"
+                  placeholder="create password"
+                  className="mt-1 w-full border border-gray-300 px-3 py-2 rounded-md"
+                />
+                <ErrorMessage
+                  name="password"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
+              </div>
               <div>
                 <label
-                  htmlFor="firstName"
+                  htmlFor="confirmPassword"
                   className="block text-sm font-medium"
                 >
-                  First Name
+                  Confirm Password
                 </label>
                 <Field
-                  name="firstName"
-                  type="text"
-                  placeholder="Segni"
-                  className="mt-1 w-full border border-gray-300 px-3 py-2 rounded-md "
-                />
-                <ErrorMessage
-                  name="firstName"
-                  component="div"
-                  className="text-red-500 text-sm mt-1"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="lastName" className="block text-sm font-medium">
-                  Last Name
-                </label>
-                <Field
-                  name="lastName"
-                  type="text"
-                  placeholder="Tsega"
-                  className="mt-1 w-full border border-gray-300 px-3 py-2 rounded-md "
-                />
-                <ErrorMessage
-                  name="lastName"
-                  component="div"
-                  className="text-red-500 text-sm mt-1"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium">
-                Email
-              </label>
-              <Field
-                name="email"
-                type="email"
-                placeholder="segni@gmail.com"
-                className="mt-1 w-full border border-gray-300 px-3 py-2 rounded-md "
-              />
-              <ErrorMessage
-                name="email"
-                component="div"
-                className="text-red-500 text-sm mt-1"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium">
-                Password
-              </label>
-              <Field
-                name="password"
-                type="password"
-                placeholder="create password"
-                className="mt-1 w-full border border-gray-300 px-3 py-2 rounded-md"
-              />
-              <ErrorMessage
-                name="password"
-                component="div"
-                className="text-red-500 text-sm mt-1"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-medium"
-              >
-                Confirm Password
-              </label>
-              <Field
-                name="confirmPassword"
-                type="password"
+                  name="confirmPassword"
+                  type="password"
                   placeholder="confirm password"
+                  className="mt-1 w-full border border-gray-300 px-3 py-2 rounded-md"
+                />
+                <ErrorMessage
+                  name="confirmPassword"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
+              </div>
 
-                className="mt-1 w-full border border-gray-300 px-3 py-2 rounded-md"
-              />
-              <ErrorMessage
-                name="confirmPassword"
-                component="div"
-                className="text-red-500 text-sm mt-1"
-              />
-            </div>
-
-            <Button
-              type="submit"
-              className="w-full bg-amber-600 hover:bg-amber-600 cursor-pointer"
-            >
-              Sign up
-            </Button>
-          </Form>
+              <Button
+                type="submit"
+                className="w-full bg-amber-600 hover:bg-amber-600 cursor-pointer"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Signing up.." : "Sign up"}
+              </Button>
+            </Form>
+          )}
         </Formik>
 
         <div className="flex flex-col gap-2 mt-8 items-center border-t pt-2">
-        
           <span className="text-gray-500 ">
             Already have an account?
-            <Link to="/signin" className="text-amber-600 cursor-pointer"> Sign In Here</Link>
+            <Link to="/signin" className="text-amber-600 cursor-pointer">
+              {" "}
+              Sign In Here
+            </Link>
           </span>
 
-          <p className="text-gray-500 text-center my-4">By creating an account, you agree to our <span className="text-amber-500">Terms of Service</span> and <span className="text-amber-500">Privacy Policy</span></p>
+          <p className="text-gray-500 text-center my-4">
+            By creating an account, you agree to our{" "}
+            <span className="text-amber-500">Terms of Service</span> and{" "}
+            <span className="text-amber-500">Privacy Policy</span>
+          </p>
         </div>
       </div>
     </div>

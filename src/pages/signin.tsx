@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/authContext";
 import axios from "axios";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { Link, useNavigate } from "react-router-dom";
@@ -14,6 +15,7 @@ const SignInSchema = Yup.object().shape({
 const SignIn = () => {
   const url = import.meta.env.VITE_BACKEND_API;
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   return (
     <div className="h-screen flex p-10 justify-center ">
@@ -27,10 +29,12 @@ const SignIn = () => {
           initialValues={{ email: "", password: "" }}
           validationSchema={SignInSchema}
           onSubmit={async (values, { setSubmitting }) => {
-            console.log("Form data:", values);
             try {
-              const response = await axios.post(`${url}/api/user/login`, values);
-              localStorage.setItem("token", response.data.accessToken);
+              const response = await axios.post(
+                `${url}/api/user/login`,
+                values
+              );
+              login(response.data.accessToken);
               navigate("/dashboard");
               console.log("Sign in successful:", response.data);
             } catch (error) {
@@ -40,46 +44,49 @@ const SignIn = () => {
             }
           }}
         >
-          <Form className="space-y-6">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium">
-                Email
-              </label>
-              <Field
-                name="email"
-                type="email"
-                className="mt-1 w-full border border-gray-300 px-3 py-1 rounded-md "
-              />
-              <ErrorMessage
-                name="email"
-                component="div"
-                className="text-red-500 text-sm mt-1"
-              />
-            </div>
+          {({ isSubmitting }) => (
+            <Form className="space-y-6">
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium">
+                  Email
+                </label>
+                <Field
+                  name="email"
+                  type="email"
+                  className="mt-1 w-full border border-gray-300 px-3 py-1 rounded-md "
+                />
+                <ErrorMessage
+                  name="email"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
+              </div>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium">
-                Password
-              </label>
-              <Field
-                name="password"
-                type="password"
-                className="mt-1 w-full border border-gray-300 px-3 py-1 rounded-md"
-              />
-              <ErrorMessage
-                name="password"
-                component="div"
-                className="text-red-500 text-sm mt-1"
-              />
-            </div>
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium">
+                  Password
+                </label>
+                <Field
+                  name="password"
+                  type="password"
+                  className="mt-1 w-full border border-gray-300 px-3 py-1 rounded-md"
+                />
+                <ErrorMessage
+                  name="password"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
+              </div>
 
-            <Button
-              type="submit"
-              className="w-full bg-amber-600 hover:bg-amber-600 cursor-pointer"
-            >
-              Sign In
-            </Button>
-          </Form>
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-amber-600 hover:bg-amber-600 cursor-pointer"
+              >
+                { isSubmitting  ? "Signing in.." : "Sign In"}
+              </Button>
+            </Form>
+          )}
         </Formik>
 
         <div className="flex flex-col gap-2 mt-2 items-center ">
