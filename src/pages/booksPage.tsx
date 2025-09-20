@@ -16,7 +16,7 @@ const BooksPage = () => {
   useEffect(() => {
     async function getBooks() {
       try {
-        const response = await axios(`${url}/api/books/?limit=${limit}`);
+        const response = await axios(`${url}/books/?limit=${limit}`);
         setBooks(response.data.books);
         setLoading(false);
       } catch (e) {

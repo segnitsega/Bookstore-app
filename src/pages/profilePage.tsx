@@ -38,8 +38,8 @@ const ProfilePage = () => {
 
     async function getUserData() {
       try {
-        const response = await axios.get(`${url}/api/user/${userID}`);
-        console.log(`${url}/api/user/${userID}`);
+        const response = await axios.get(`${url}/user/${userID}`);
+        console.log(`${url}/user/${userID}`);
         setUser(response.data.user);
         setLoading(false);
         console.log("User data:", response.data.user);
@@ -50,7 +50,7 @@ const ProfilePage = () => {
     }
     getUserData();
   }, []);
-  // console.log(user) // loggin null
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">

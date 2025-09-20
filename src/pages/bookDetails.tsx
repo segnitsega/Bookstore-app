@@ -28,7 +28,7 @@ const BookDetails = () => {
   useEffect(() => {
     async function getBook() {
       try {
-        const response = await axios(`${url}/api/books/${id}`);
+        const response = await axios(`${url}/books/${id}`);
         setBook(response.data.book);
         setLoading(false);
       } catch (e) {
@@ -42,7 +42,7 @@ const BookDetails = () => {
   useEffect(() => {
     async function getBookByGenre(genre: string) {
       try {
-        const response = await axios(`${url}/api/books/genre/${genre}/?limit=4`);
+        const response = await axios(`${url}/books/genre/${genre}/?limit=4`);
         setBookByGenre(response.data.books);
         setLoadingByGenre(false);
       } catch (e) {

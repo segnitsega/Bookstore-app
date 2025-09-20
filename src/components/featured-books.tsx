@@ -18,7 +18,7 @@ const FeaturedBooks = () => {
   useEffect(() => {
     async function getFeaturedBooks() {
       try {
-        const response = await axios(`${url}/api/books/featured`);
+        const response = await axios(`${url}/books/featured`);
         setFeaturedBooks(response.data.featuredBooks);
         setLoading(false);
       } catch (e) {

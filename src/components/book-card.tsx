@@ -1,3 +1,4 @@
+import addToCart from "@/utils/add-to-cart";
 import { Button } from "./ui/button";
 // import { FaArrowRight } from "react-icons/fa";
 // import books from "../assets/books.jpg";
@@ -6,6 +7,7 @@ import { CiHeart } from "react-icons/ci";
 // import { FaHeart } from "react-icons/fa";
 import { FaStar } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 
 interface bookCardProp {
   bookTitle: string;
@@ -14,7 +16,17 @@ interface bookCardProp {
   bookRating: number;
   bookPrice: number;
   discountedPrice: number;
-  bookId: number;
+  bookId: string;
+}
+
+async function handleAddToCart(bookId: string){
+  console.log("Add to cart ran.")
+  const response = await addToCart(bookId);
+  if(response){
+    toast("✅ Book added to cart")
+  } else{
+    toast("❌ Book not added to cart, try again")
+  }
 }
 
 const BookCard = ({
@@ -27,9 +39,7 @@ const BookCard = ({
   bookId,
 }: bookCardProp) => {
   return (
-    <div
-      className="relative border border-gray-200 rounded-xl flex flex-col overflow-hidden cursor-pointer hover:shadow-lg hover:shadow-blue-100"
-    >
+    <div className="relative border border-gray-200 rounded-xl flex flex-col overflow-hidden cursor-pointer hover:shadow-lg hover:shadow-blue-100">
       <Link to={`/books/${bookId}`}>
         <img
           src={bookUrl}
@@ -42,8 +52,12 @@ const BookCard = ({
         size={40}
       />
       <div className="p-2 flex flex-col gap-2">
-        <Link to={`/books/${bookId}`} className="text-blue-500 font-bold">{bookTitle}</Link >
-        <Link to={`/books/${bookId}`} className="text-gray-500">{bookAuthor}</Link >
+        <Link to={`/books/${bookId}`} className="text-blue-500 font-bold">
+          {bookTitle}
+        </Link>
+        <Link to={`/books/${bookId}`} className="text-gray-500">
+          {bookAuthor}
+        </Link>
         <Link to={`/books/${bookId}`} className="flex">
           {[...Array(5)].map((_, index) => (
             <FaStar
@@ -61,8 +75,11 @@ const BookCard = ({
             <span className="line-through text-gray-500">
               ${discountedPrice}
             </span>
-          </Link >
-          <Button className="bg-white text-gray-500 border border-amber-200 hover:bg-gray-100 hover:text-gray-800 cursor-pointer">
+          </Link>
+          <Button
+            onClick={() => handleAddToCart(bookId)}
+            className="bg-white text-gray-500 border border-amber-200 hover:bg-gray-100 hover:text-gray-800 cursor-pointer"
+          >
             Add to Cart
           </Button>
         </div>

@@ -10,7 +10,7 @@ import BookCard from "./book-card";
 import spinner from "../assets/spinner.svg";
 
 export interface bookType {
-  id: number;
+  id: string;
   title: string;
   author: string;
   price: number;
@@ -38,7 +38,7 @@ const Bestsellers = () => {
     async function getbestsellersBook() {
       try {
         const response = await axios(
-          `${url}/api/books/bestsellers/?limit=${limit}`
+          `${url}/books/bestsellers/?limit=${limit}`
         );
         setBestSellersBook(response.data.bestsellersBooks);
         setLoading(false);

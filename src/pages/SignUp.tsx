@@ -50,7 +50,7 @@ const SignUp = () => {
             console.log(url);
             try {
               const response = await axios.post(
-                `${url}/api/user/signup`,
+                `${url}/user/signup`,
                 values
               );
               login(response.data.accessToken)

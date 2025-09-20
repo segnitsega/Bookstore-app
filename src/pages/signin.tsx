@@ -32,7 +32,7 @@ const SignIn = () => {
           onSubmit={async (values, { setSubmitting }) => {
             try {
               const response = await axios.post(
-                `${url}/api/user/login`,
+                `${url}/user/login`,
                 values
               );
               login(response.data.accessToken);

@@ -10,7 +10,7 @@ import StartPage from "./pages/startPage";
 import SignUp from "./pages/SignUp";
 import ProtectedRoute from "./utils/protectedRoute";
 import { Toaster } from "sonner";
-
+  
 const App = () => {
   return (
     <div>
