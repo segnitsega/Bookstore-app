@@ -4,6 +4,7 @@ import axios from "axios";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { Link, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
+import { toast } from "sonner"
 
 const SignInSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
@@ -35,9 +36,11 @@ const SignIn = () => {
                 values
               );
               login(response.data.accessToken);
+              toast("Login successful!")
               navigate("/dashboard");
               console.log("Sign in successful:", response.data);
             } catch (error) {
+              toast("Error")
               console.log(error);
             } finally {
               setSubmitting(false);
