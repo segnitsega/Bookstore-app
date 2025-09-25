@@ -12,7 +12,7 @@ const LandingPage = () => {
         <Card />
         <FeaturedBooks />
         <Bestsellers />
-        <UpdateSection />
+        <UpdateSection /> {/*implement subscription logic */}
       </div>
     </div>
   );

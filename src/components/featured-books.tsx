@@ -15,6 +15,7 @@ const FeaturedBooks = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | Error | unknown | null>(null);
 
+
   useEffect(() => {
     async function getFeaturedBooks() {
       try {
@@ -49,9 +50,9 @@ const FeaturedBooks = () => {
         {loading && (
           <img src={spinner} alt="Loading..." className="w-20 h-20 mx-auto" />
         )}
-        {error ? (
+        {error && !featuredBooks ? (
           <div className="mx-auto bg-red-100 text-red-800 px-4 py-2 rounded-md text-sm">
-            ⚠️ Error fetching books. Please refresh and try again.
+            ⚠️ Error fetching featured books. Please refresh and try again.
           </div>
         ) : (
           ""
@@ -59,6 +60,7 @@ const FeaturedBooks = () => {
         {featuredBooks &&
           featuredBooks.map((book: bookType, index: number) => (
             <BookCard
+              book={book}
               key={index}
               bookId={book.id}
               bookTitle={book.title}

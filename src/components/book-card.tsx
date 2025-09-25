@@ -17,6 +17,7 @@ interface bookCardProp {
   bookPrice: number;
   discountedPrice: number;
   bookId: string;
+  book: any;
 }
 
 async function handleAddToCart(bookId: string){
@@ -30,6 +31,7 @@ async function handleAddToCart(bookId: string){
 }
 
 const BookCard = ({
+  book,
   bookTitle,
   bookUrl,
   bookAuthor,
@@ -80,7 +82,9 @@ const BookCard = ({
             onClick={() => handleAddToCart(bookId)}
             className="bg-white text-gray-500 border border-amber-200 hover:bg-gray-100 hover:text-gray-800 cursor-pointer"
           >
-            Add to Cart
+            {
+              book?.inCart ? "In Cart" : "Add to Cart"
+            }
           </Button>
         </div>
       </div>

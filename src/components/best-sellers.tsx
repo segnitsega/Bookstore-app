@@ -70,7 +70,7 @@ const Bestsellers = () => {
 
         {error ? (
           <div className="mx-auto bg-red-100 text-red-800 px-4 py-2 rounded-md text-sm">
-            ⚠️ Error fetching books. Please refresh and try again.
+            ⚠️ Error fetching bestseller books. Please refresh and try again.
           </div>
         ) : (
           ""

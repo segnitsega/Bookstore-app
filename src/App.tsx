@@ -17,10 +17,8 @@ const App = () => {
       <BrowserRouter>
         <Toaster position="top-center"/>
         <Routes>
-          {/* <Route path="/" element={<SignUp />} /> */}
           <Route index element={<StartPage />} />
           <Route path="/" element={<Layout />}>
-            {/* <Route index element={<StartPage />} /> */}
             <Route path="signin" element={<SignIn />} />
             <Route path="signup" element={<SignUp />} />
             <Route
