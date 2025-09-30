@@ -5,9 +5,11 @@ import { FaArrowLeft } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import spinner from "../assets/spinner.svg";
+import { useNavigate } from "react-router-dom";
 
 const url = import.meta.env.VITE_BACKEND_API;
 const CartPage = () => {
+  const navigate = useNavigate()
   let totalPrice = 0;
   const [loading, setLoading] = useState(true);
   const [cartBooks, setCartBooks] = useState<[] | null>(null);
@@ -31,8 +33,8 @@ const CartPage = () => {
   return (
     <div className="m-8">
       <div className="flex items-center">
-        <Button className=" bg-amber-500 border hover:border-blue-500 cursor-pointer hover:bg-amber-600 px-6">
-          Continue shopping
+        <Button onClick={() => navigate("/books")} className=" bg-amber-500 border text-white hover:border-blue-500 cursor-pointer hover:bg-amber-600 px-6">
+         Continue shopping
         </Button>
         <FaArrowLeft className="relative -top- right-42 text-white text-sm" />
         <div>
