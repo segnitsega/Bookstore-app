@@ -8,11 +8,51 @@ import axios from "axios";
 import spinner from "../assets/spinner.svg";
 
 const BooksPage = () => {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchError, setSearchError] = useState(false);
+
   const url = import.meta.env.VITE_BACKEND_API;
   const [books, setBooks] = useState<[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | Error | unknown | null>(null);
+
   const limit = 8;
+  const fetchBooks = async (q: string) => {
+    try {
+      setSearchError(false);
+      console.log("fetching the searched book..");
+      setSearchLoading(true);
+      const res = await axios.get(`${url}/search?q=${encodeURIComponent(q)}`);
+      if (res.status === 200) {
+        setResults(res.data.books);
+        setSearchLoading(false);
+        console.log("Success status code", res.status)
+        // console.log("result state", res.data);
+      } else{
+        console.log("Failed status code" ,res.status)
+        setSearchError(true)
+      }
+    } catch (err) {
+      setSearchError(true);
+      console.log("Error searching the book");
+      setSearchLoading(false);
+      console.error(err);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setQuery(value);
+    setSearchError(false)
+    if (value === "") {
+      setResults([]);
+    }
+    // console.log(value, results)
+    // fetchBooks(value);
+  };
+
   useEffect(() => {
     async function getBooks() {
       try {
@@ -39,15 +79,22 @@ const BooksPage = () => {
             <CiSearch className="text-gray-500 w-10 md:h-5 md:w-5" />
             <input
               type="text"
+              value={query}
+              onChange={handleChange}
               placeholder="Search books, authors..."
               className="outline-none w-[400px]"
             />
           </div>
-          <Button className="hidden md:block bg-amber-500 cursor-pointer">
-            Search
+          <Button
+            disabled={searchLoading}
+            className="hidden md:block bg-amber-500 hover:bg-amber-400 cursor-pointer"
+            onClick={() => fetchBooks(query)}
+          >
+            {searchLoading ? "Searching.." : "Search"}
           </Button>
         </div>
       </div>
+      {searchError && <div className="-mt-4 flex justify-end mr-60 text-red-500">{ query ? `Book: ${query} not found` : "Enter book name or author to search for books"}</div>}
 
       <div className="flex gap-4">
         <div className="hidden md:block">
@@ -64,9 +111,9 @@ const BooksPage = () => {
         ) : (
           ""
         )}
-        <div className="grid grid-cols-4 grid-row-2 gap-4">
-          {books &&
-            books.map((book: bookType, index) => (
+        {results.length > 0 ? (
+          <div className="grid grid-cols-4 grid-row-2 gap-4">
+            {results.map((book: bookType, index) => (
               <BookCard
                 key={index}
                 bookId={book.id}
@@ -78,7 +125,24 @@ const BooksPage = () => {
                 discountedPrice={book.price * 2}
               />
             ))}
-        </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-4 grid-row-2 gap-4">
+            {books &&
+              books.map((book: bookType, index) => (
+                <BookCard
+                  key={index}
+                  bookId={book.id}
+                  bookTitle={book.title}
+                  bookUrl={book.imageUrl}
+                  bookAuthor={book.author}
+                  bookRating={book.bookRating}
+                  bookPrice={book.price}
+                  discountedPrice={book.price * 2}
+                />
+              ))}
+          </div>
+        )}
       </div>
     </div>
   );
