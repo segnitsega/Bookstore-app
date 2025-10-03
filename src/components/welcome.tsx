@@ -73,10 +73,11 @@ const Welcome = () => {
             />
           </div>
           <Button
-            className="text-white bg-amber-600  cursor-pointer border hover:border-blue-500 hover:bg-amber-500"
+          disabled={loading}
+            className="text-white disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer border bg-amber-600 hover:border-blue-500 hover:bg-amber-500"
             onClick={() => fetchBooks(query)}
           >
-            Search
+            { loading ? "Searching.." : "Search"}
           </Button>
         </div>
 
