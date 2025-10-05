@@ -6,8 +6,11 @@ import type { bookType } from "@/components/best-sellers";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import spinner from "../assets/spinner.svg";
+import { useSearchParams } from "react-router-dom";
 
 const BooksPage = () => {
+  const [searchParams] = useSearchParams()
+  const filter = searchParams.get("filter");
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
@@ -55,8 +58,12 @@ const BooksPage = () => {
 
   useEffect(() => {
     async function getBooks() {
+      let endPoint = "";
       try {
-        const response = await axios(`${url}/books/?limit=${limit}`);
+        if(filter) endPoint = `/books/?limit=${limit}&bestSellers=true`;
+        else endPoint = `/books/?limit=${limit}`;
+        console.log("Here is th url", endPoint)
+        const response = await axios(`${url}${endPoint}`);
         setBooks(response.data.books);
         setLoading(false);
       } catch (e) {

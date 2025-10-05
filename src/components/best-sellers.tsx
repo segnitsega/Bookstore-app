@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import BookCard from "./book-card";
 import spinner from "../assets/spinner.svg";
+import { Link } from "react-router-dom";
 
 export interface bookType {
   id: string;
@@ -57,9 +58,9 @@ const Bestsellers = () => {
           <p className="text-gray-500 ">The most popular books right now</p>
         </div>
         <div className="relative text-blue-500 mb-2 md:mb-0">
-          <Button className="bg-white text-blue-500 border border-amber-400 w-[200px] hover:text-gray-800 hover:bg-gray-100 cursor-pointer">
+         <Link to='/books/?filter=bestSellers'><Button className="bg-white text-blue-500 border border-amber-400 w-[200px] hover:text-gray-800 hover:bg-gray-100 cursor-pointer">
             View All Bestsellers
-          </Button>
+          </Button></Link> 
           <FaArrowRight className=" absolute top-2.5 left-43 md:left-43" />
         </div>
       </div>
