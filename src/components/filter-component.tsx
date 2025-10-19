@@ -9,8 +9,26 @@ import { HiChevronUpDown } from "react-icons/hi2";
 import { LuFilter } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { TbLetterX } from "react-icons/tb";
+import { useSearchParams } from "react-router-dom";
+import { useState } from "react";
 
 const Filter = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [genre, setGenre] = useState("Scientific");
+  const [sort, setSort] = useState("Title");
+
+  const applyFilter = (value: string) => {
+    searchParams.set("filter", value); // e.g., "bestsellers"
+    const existingFilters = searchParams.getAll("filter");
+    console.log("existing filters", existingFilters);
+    if (!existingFilters.includes(value) && value != "Title") {
+      searchParams.append("filter", value);
+    }
+
+    setSearchParams(searchParams); // updates the URL
+    setGenre(value);
+  };
+
   return (
     <div className="p-6 h-screen max-w-4xl min-w-[300px] shadow rounded-lg flex flex-col gap-4 border border-gray-200">
       <div className="flex items-center font-bold gap-2">
@@ -22,15 +40,43 @@ const Filter = () => {
         <h1>Sort By</h1>
         <DropdownMenu>
           <DropdownMenuTrigger className="w-full flex items-center justify-between p-2 border border-gray-200 rounded-md hover:border-blue-300 cursor-pointer">
-            Title
+            {sort}
             <HiChevronUpDown />
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-[260px]">
             <DropdownMenuItem>Title</DropdownMenuItem>
-            <DropdownMenuItem>Price: Low to high</DropdownMenuItem>
-            <DropdownMenuItem>Price: high to Low</DropdownMenuItem>
-            <DropdownMenuItem>Rating</DropdownMenuItem>
-            <DropdownMenuItem>Newest</DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                setSort("Price: Low to high");
+                applyFilter("Price: Low to high");
+              }}
+            >
+              Price: Low to high
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                setSort("Price: High to low");
+                applyFilter("Price: High to low");
+              }}
+            >
+              Price: high to Low
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                setSort("Rating");
+                applyFilter("Rating");
+              }}
+            >
+              Rating
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                setSort("Newest");
+                applyFilter("newest");
+              }}
+            >
+              Newest
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -38,31 +84,25 @@ const Filter = () => {
         <h1>Genre</h1>
         <DropdownMenu>
           <DropdownMenuTrigger className="w-full flex items-center justify-between p-2 border border-gray-200 rounded-md hover:border-blue-300 cursor-pointer">
-            Title
+            {genre}
             <HiChevronUpDown />
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-[260px]">
-            <DropdownMenuItem>Title</DropdownMenuItem>
-            <DropdownMenuItem>Price: Low to high</DropdownMenuItem>
-            <DropdownMenuItem>Price: high to Low</DropdownMenuItem>
-            <DropdownMenuItem>Rating</DropdownMenuItem>
-            <DropdownMenuItem>Newest</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      <div className="flex flex-col gap-2">
-        <h1>Author</h1>
-        <DropdownMenu>
-          <DropdownMenuTrigger className="w-full flex items-center justify-between p-2 border border-gray-200 rounded-md hover:border-blue-300 cursor-pointer">
-            Title
-            <HiChevronUpDown />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-[260px]">
-            <DropdownMenuItem>Title</DropdownMenuItem>
-            <DropdownMenuItem>Price: Low to high</DropdownMenuItem>
-            <DropdownMenuItem>Price: high to Low</DropdownMenuItem>
-            <DropdownMenuItem>Rating</DropdownMenuItem>
-            <DropdownMenuItem>Newest</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => applyFilter("Scientific")}>
+              Scientific
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => applyFilter("Historic")}>
+              Historic
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => applyFilter("Programming")}>
+              Programming
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => applyFilter("Religion")}>
+              Religion
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => applyFilter("Fiction")}>
+              Fiction
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

@@ -9,7 +9,7 @@ import spinner from "../assets/spinner.svg";
 import { useSearchParams } from "react-router-dom";
 
 const BooksPage = () => {
-  const [searchParams] = useSearchParams()
+  const [searchParams] = useSearchParams();
   const filter = searchParams.get("filter");
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
@@ -31,11 +31,11 @@ const BooksPage = () => {
       if (res.status === 200) {
         setResults(res.data.books);
         setSearchLoading(false);
-        console.log("Success status code", res.status)
+        console.log("Success status code", res.status);
         // console.log("result state", res.data);
-      } else{
-        console.log("Failed status code" ,res.status)
-        setSearchError(true)
+      } else {
+        console.log("Failed status code", res.status);
+        setSearchError(true);
       }
     } catch (err) {
       setSearchError(true);
@@ -48,7 +48,7 @@ const BooksPage = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setQuery(value);
-    setSearchError(false)
+    setSearchError(false);
     if (value === "") {
       setResults([]);
     }
@@ -58,11 +58,19 @@ const BooksPage = () => {
 
   useEffect(() => {
     async function getBooks() {
-      let endPoint = "";
+      let endPoint = `/books/?limit=${limit}`;
       try {
-        if(filter) endPoint = `/books/?limit=${limit}&bestSellers=true`;
-        else endPoint = `/books/?limit=${limit}`;
-        console.log("Here is th url", endPoint)
+        if (filter) {
+          if (filter === "bestSellers") {
+            endPoint += "&bestSellers=true";
+          } else if(filter === "featured"){
+            endPoint += "&featured=true";
+          }
+          else {
+            endPoint += `&genre=${encodeURIComponent(filter)}`;
+          }
+        }
+        console.log("Here is th url", endPoint);
         const response = await axios(`${url}${endPoint}`);
         setBooks(response.data.books);
         setLoading(false);
@@ -72,7 +80,7 @@ const BooksPage = () => {
       }
     }
     getBooks();
-  }, []);
+  }, [filter]);
 
   return (
     <div className="overflow-x-hidden p-2 md:p-8">
@@ -101,7 +109,13 @@ const BooksPage = () => {
           </Button>
         </div>
       </div>
-      {searchError && <div className="-mt-4 flex justify-end mr-60 text-red-500">{ query ? `Book: ${query} not found` : "Enter book name or author to search for books"}</div>}
+      {searchError && (
+        <div className="-mt-4 flex justify-end mr-60 text-red-500">
+          {query
+            ? `Book: ${query} not found`
+            : "Enter book name or author to search for books"}
+        </div>
+      )}
 
       <div className="flex gap-4">
         <div className="hidden md:block">

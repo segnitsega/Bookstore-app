@@ -113,7 +113,7 @@ const Welcome = () => {
             Browse Books
           </Link>
           <Link
-            to=""
+            to="/books/?filter=bestSellers"
             className="text-blue-500 bg-white border-1 border-amber-200 md:w-[150px] text-xs md:text-lg hover:bg-gray-100 hover:text-gray-800 cursor-pointer rounded"
           >
             View Bestsellers
