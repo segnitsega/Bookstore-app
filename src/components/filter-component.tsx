@@ -14,19 +14,28 @@ import { useState } from "react";
 
 const Filter = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [genre, setGenre] = useState("Scientific");
-  const [sort, setSort] = useState("Title");
+  const [genre, setGenre] = useState("Science");
+  const [sort, setSort] = useState("Newest");
+  const [minPrice, setMinPrice] = useState(0);
+  const [price, setPrice] = useState(150);
+  const [rating, setRating] = useState(3);
 
-  const applyFilter = (value: string) => {
-    searchParams.set("filter", value); // e.g., "bestsellers"
-    const existingFilters = searchParams.getAll("filter");
-    console.log("existing filters", existingFilters);
-    if (!existingFilters.includes(value) && value != "Title") {
-      searchParams.append("filter", value);
-    }
+  const applyFilter = () => {
+    setSearchParams({
+      minPrice: String(minPrice),
+      genre: genre,
+      maxPrice: String(price),
+      minRating: String(rating),
+    });
+  };
 
-    setSearchParams(searchParams); // updates the URL
-    setGenre(value);
+  const resetFilter = () => {
+    setGenre("Science");
+    setSort("Newest");
+    setPrice(150);
+    setRating(3);
+    setMinPrice(0);
+    setSearchParams({});
   };
 
   return (
@@ -44,19 +53,20 @@ const Filter = () => {
             <HiChevronUpDown />
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-[260px]">
-            <DropdownMenuItem>Title</DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => {
                 setSort("Price: Low to high");
-                applyFilter("Price: Low to high");
+                setMinPrice(50);
+                setPrice(500);
               }}
             >
               Price: Low to high
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => {
-                setSort("Price: High to low");
-                applyFilter("Price: High to low");
+                setSort("Price: high to Low");
+                setMinPrice(50);
+                setPrice(500);
               }}
             >
               Price: high to Low
@@ -64,7 +74,7 @@ const Filter = () => {
             <DropdownMenuItem
               onClick={() => {
                 setSort("Rating");
-                applyFilter("Rating");
+                setRating(5);
               }}
             >
               Rating
@@ -72,7 +82,6 @@ const Filter = () => {
             <DropdownMenuItem
               onClick={() => {
                 setSort("Newest");
-                applyFilter("newest");
               }}
             >
               Newest
@@ -88,19 +97,39 @@ const Filter = () => {
             <HiChevronUpDown />
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-[260px]">
-            <DropdownMenuItem onClick={() => applyFilter("Scientific")}>
-              Scientific
+            <DropdownMenuItem
+              onClick={() => {
+                setGenre("Science");
+              }}
+            >
+              Science
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => applyFilter("Historic")}>
-              Historic
+            <DropdownMenuItem
+              onClick={() => {
+                setGenre("Historic");
+              }}
+            >
+              History
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => applyFilter("Programming")}>
+            <DropdownMenuItem
+              onClick={() => {
+                setGenre("Programming");
+              }}
+            >
               Programming
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => applyFilter("Religion")}>
+            <DropdownMenuItem
+              onClick={() => {
+                setGenre("Religion");
+              }}
+            >
               Religion
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => applyFilter("Fiction")}>
+            <DropdownMenuItem
+              onClick={() => {
+                setGenre("Fiction");
+              }}
+            >
               Fiction
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -110,21 +139,23 @@ const Filter = () => {
       <div className="flex flex-col gap-2">
         <h1>Price Range</h1>
         <Slider
-          defaultValue={[33]}
-          max={100}
-          step={1}
+          value={[price]}
+          onValueChange={(value) => setPrice(value[0])}
+          max={500}
+          step={10}
           className="cursor-pointer"
         />
         <div className="flex justify-between text-gray-500 ">
           <span>$0</span>
-          <span>$50</span>
+          <span>$500</span>
         </div>
       </div>
       <div className="flex flex-col gap-2 ">
-        <h1>Maximum Rating</h1>
+        <h1>Minimum Rating</h1>
         <Slider
-          defaultValue={[33]}
-          max={100}
+          value={[rating]}
+          onValueChange={(value) => setRating(value[0])}
+          max={5}
           step={1}
           className="cursor-pointer"
         />
@@ -132,10 +163,17 @@ const Filter = () => {
       </div>
 
       <div>
-        <Button className="absolute bg-white text-black border border-gray-300 w-[15rem] hover:bg-gray-100 cursor-pointer hover:border-blue-500 shadow">
+        <Button
+          className="absolute bg-white text-black border border-gray-300 w-[15rem] hover:bg-gray-100 cursor-pointer hover:border-blue-500 shadow"
+          onClick={resetFilter}
+        >
           Reset Filter
         </Button>
         <TbLetterX className="relative top-2.5 -right-15 " />
+
+        <Button className="mt-8 w-[15rem]" onClick={applyFilter}>
+          Apply Filter
+        </Button>
       </div>
     </div>
   );

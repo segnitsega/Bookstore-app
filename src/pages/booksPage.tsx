@@ -10,7 +10,14 @@ import { useSearchParams } from "react-router-dom";
 
 const BooksPage = () => {
   const [searchParams] = useSearchParams();
+  const sort = searchParams.get("sort");
+  const genre = searchParams.get("genre");
+  const maxPrice = searchParams.get("maxPrice");
+  const minPrice = searchParams.get("minPrice");
+  const minRating = searchParams.get("minRating");
+
   const filter = searchParams.get("filter");
+
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
@@ -57,30 +64,40 @@ const BooksPage = () => {
   };
 
   useEffect(() => {
+    console.log("Searching books by filter effect ran...");
     async function getBooks() {
       let endPoint = `/books/?limit=${limit}`;
+      setBooks(null);
       try {
+        setError(null);
+        setLoading(true);
         if (filter) {
           if (filter === "bestSellers") {
             endPoint += "&bestSellers=true";
-          } else if(filter === "featured"){
+          } else if (filter === "featured") {
             endPoint += "&featured=true";
-          }
-          else {
+          } else {
             endPoint += `&genre=${encodeURIComponent(filter)}`;
           }
+        } else if (genre || minPrice || maxPrice || minRating) {
+          endPoint += `&maxPrice=${maxPrice}&minPrice=${minPrice}&minRating=${minRating}&genre=${genre}`;
         }
         console.log("Here is th url", endPoint);
         const response = await axios(`${url}${endPoint}`);
         setBooks(response.data.books);
         setLoading(false);
-      } catch (e) {
-        setError(e);
+      } catch (err: any) {
+        if (err.response && err.response.status === 400) {
+          setBooks([]); // make sure books is an empty array
+          setError("No books found for the selected filters.");
+        } else {
+          setError("Something went wrong. Please try again.");
+        }
         setLoading(false);
       }
     }
     getBooks();
-  }, [filter]);
+  }, [searchParams]);
 
   return (
     <div className="overflow-x-hidden p-2 md:p-8">
@@ -127,7 +144,7 @@ const BooksPage = () => {
         )}
         {error ? (
           <div className="mx-auto bg-red-100 text-red-800 px-4 py-2 rounded-md text-sm">
-            ⚠️ Error fetching books. Please refresh and try again.
+            ⚠️ {error}
           </div>
         ) : (
           ""
