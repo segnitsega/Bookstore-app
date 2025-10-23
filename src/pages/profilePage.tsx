@@ -9,6 +9,7 @@ import { CgProfile } from "react-icons/cg";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import spinner from "../assets/spinner.svg";
+import { useCart } from "@/contexts/cartContext";
 
 interface userType {
   id: number;
@@ -19,6 +20,9 @@ interface userType {
 }
 
 const ProfilePage = () => {
+    const { cartItems, addToCart, removeFromCart, clearCart } = useCart();
+  console.log("Items in cart", cartItems)
+    
   const navigate = useNavigate();
   const url = import.meta.env.VITE_BACKEND_API;
   const [personClicked, setPersonClicked] = useState(true);

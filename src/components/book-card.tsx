@@ -1,13 +1,12 @@
 import addToCart from "@/utils/add-to-cart";
 import { Button } from "./ui/button";
-// import { FaArrowRight } from "react-icons/fa";
-// import books from "../assets/books.jpg";
 import { CiHeart } from "react-icons/ci";
-// import { CiStar } from "react-icons/ci";
-// import { FaHeart } from "react-icons/fa";
 import { FaStar } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import { useContext, useEffect } from "react";
+import { useCart } from "@/contexts/cartContext";
+import axios from "axios";
 
 interface bookCardProp {
   bookTitle: string;
@@ -19,14 +18,30 @@ interface bookCardProp {
   bookId: string;
   book: any;
 }
+const url = import.meta.env.VITE_BACKEND_API;
 
-async function handleAddToCart(bookId: string){
-  console.log("Add to cart ran.")
-  const response = await addToCart(bookId);
-  if(response){
-    toast("✅ Book added to cart")
-  } else{
-    toast("❌ Book not added to cart, try again")
+async function handleAddToCart(bookId: string) {
+  console.log("Add to cart ran.");
+  // const response = await addToCart(bookId);
+  try {
+    const response = await axios.post(
+      `${url}/cart/add`,
+      { bookId },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    if (response.status === 201) {
+      toast("✅ Book added to cart");
+    }
+  } catch (err: any) {
+    if (err.response.status === 400) {
+      toast("❌ The book is already in cart, add another book");
+    } else {
+      toast("❌ Book not added to cart, try again");
+    }
   }
 }
 
@@ -40,6 +55,27 @@ const BookCard = ({
   discountedPrice,
   bookId,
 }: bookCardProp) => {
+  const token = localStorage.getItem("token") as string;
+  const userId = JSON.parse(atob(token.split(".")[1])).id;
+
+  const { cartItems, addToCart, removeFromCart, clearCart } = useCart();
+
+  useEffect(() => {
+    async function getCartItems() {
+      const endPoint = `/user/cart/${userId}`;
+      try {
+        const response = await axios(`${url}${endPoint}`);
+        response.data.cartItems.map((item) =>
+          addToCart(item)
+        );
+        console.log("Items in cart", cartItems);
+      } catch (err: any) {
+        console.log("No books in cart", err);
+      }
+    }
+    getCartItems();
+  }, []);
+
   return (
     <div className="relative border border-gray-200 rounded-xl flex flex-col overflow-hidden cursor-pointer hover:shadow-lg hover:shadow-blue-100">
       <Link to={`/books/${bookId}`}>
@@ -82,9 +118,9 @@ const BookCard = ({
             onClick={() => handleAddToCart(bookId)}
             className="bg-white text-gray-500 border border-amber-200 hover:bg-gray-100 hover:text-gray-800 cursor-pointer"
           >
-            {
-              book?.inCart ? "In Cart" : "Add to Cart"
-            }
+            {cartItems.find((i) => i.bookId === bookId)
+              ? "In Cart"
+              : "Add to Cart"}
           </Button>
         </div>
       </div>
