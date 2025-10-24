@@ -2,12 +2,56 @@ import { Button } from "./ui/button";
 import books from "../assets/books.jpg";
 import { CiHeart } from "react-icons/ci";
 import { FaStar } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import BookCard from "./book-card";
+import type { bookType } from "@/components/best-sellers";
+
+const token = localStorage.getItem("token") as string;
+const userId = JSON.parse(atob(token.split(".")[1])).id;
+const url = import.meta.env.VITE_BACKEND_API;
 
 const WishlistSection = () => {
+  const [loading, setLoading] = useState(false);
+  const [books, setBooks] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const wishlist = await axios.get(`${url}/user/wishlist/${userId}`);
+        console.log(wishlist)
+        setBooks(wishlist.data.wishlistBooks);
+        console.log("Here is your wishlist", wishlist);
+        setLoading(false);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    fetchData();
+  }, []);
+
   return (
     <div className="border rounded-lg shadow p-4">
       <h1 className="text-slate-1000 text-2xl">My Wishlist</h1>
-      <div className="flex gap-4">
+      {loading ? (
+        <div>Loading...</div>
+      ) : (
+        <div className="grid grid-cols-3 gap-4">
+          {books.map((book: any, index) => (
+            <BookCard
+              key={index}
+              bookId={book.book.id}
+              bookTitle={book.book.title}
+              bookUrl={book.book.imageUrl}
+              bookAuthor={book.book.author}
+              bookRating={book.book.bookRating}
+              bookPrice={book.book.price}
+              discountedPrice={book.book.price * 2}
+            />
+          ))}
+        </div>
+      )}
+      {/* <div className="flex gap-4">
         <div className="relative border border-gray-200 rounded-xl flex flex-col overflow-hidden cursor-pointer hover:shadow-lg hover:shadow-blue-100">
           <img
             src={books}
@@ -71,7 +115,7 @@ const WishlistSection = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

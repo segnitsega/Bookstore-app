@@ -1,10 +1,10 @@
 import addToCart from "@/utils/add-to-cart";
 import { Button } from "./ui/button";
 import { CiHeart } from "react-icons/ci";
-import { FaStar } from "react-icons/fa";
+import { FaStar, FaHeart } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useCart } from "@/contexts/cartContext";
 import axios from "axios";
 
@@ -46,7 +46,6 @@ async function handleAddToCart(bookId: string) {
 }
 
 const BookCard = ({
-  book,
   bookTitle,
   bookUrl,
   bookAuthor,
@@ -55,26 +54,56 @@ const BookCard = ({
   discountedPrice,
   bookId,
 }: bookCardProp) => {
+  const [reloadWishlist, setReloadWishlist] = useState(false);
+
+  async function addToWishlist(bookId: string) {
+    try {
+      const added = await axios.post(
+        `${url}/books/wishlist/${bookId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      if (added) {
+        toast("Book added to wishlist");
+        setReloadWishlist(!reloadWishlist);
+      }
+    } catch (e) {
+      toast("Book not added, try again");
+      console.log(e);
+    }
+  }
+
   const token = localStorage.getItem("token") as string;
   const userId = JSON.parse(atob(token.split(".")[1])).id;
 
   const { cartItems, addToCart, removeFromCart, clearCart } = useCart();
+  const [wishlist, setWishlist] = useState([]);
 
   useEffect(() => {
     async function getCartItems() {
       const endPoint = `/user/cart/${userId}`;
       try {
         const response = await axios(`${url}${endPoint}`);
-        response.data.cartItems.map((item) =>
-          addToCart(item)
-        );
-        console.log("Items in cart", cartItems);
+        response.data.cartItems.map((item) => addToCart(item));
+        // console.log("Here is wishlist items", wishlist.data.wishlistBooks)
       } catch (err: any) {
         console.log("No books in cart", err);
       }
     }
     getCartItems();
   }, []);
+
+  useEffect(() => {
+    async function getWishlist() {
+      const wishlist = await axios.get(`${url}/user/wishlist/${userId}`);
+      if (wishlist) setWishlist(wishlist.data.wishlistBooks);
+    }
+    getWishlist();
+  }, [reloadWishlist]);
 
   return (
     <div className="relative border border-gray-200 rounded-xl flex flex-col overflow-hidden cursor-pointer hover:shadow-lg hover:shadow-blue-100">
@@ -85,10 +114,19 @@ const BookCard = ({
           className="w-[350px] h-[250px] md:w-[600px] md:h-[400px] rounded-lg duration-1000 hover:scale-105 cursor-pointer"
         />
       </Link>
-      <CiHeart
-        className="absolute top-2 right-2 bg-white/40 p-2 rounded-2xl text-red-500 "
-        size={40}
-      />
+      {wishlist.find((item: any) => item.bookId === bookId) ? (
+        <FaHeart
+          className="absolute top-2 right-2 bg-white/40 p-2 rounded-2xl text-red-500 "
+          size={40}
+        />
+      ) : (
+        <CiHeart
+          onClick={() => addToWishlist(bookId)}
+          className="absolute top-2 right-2 bg-white/40 p-2 rounded-2xl text-red-500 "
+          size={40}
+        />
+      )}
+
       <div className="p-2 flex flex-col gap-2">
         <Link to={`/books/${bookId}`} className="text-blue-500 font-bold">
           {bookTitle}

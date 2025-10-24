@@ -20,9 +20,9 @@ interface userType {
 }
 
 const ProfilePage = () => {
-    const { cartItems, addToCart, removeFromCart, clearCart } = useCart();
-  console.log("Items in cart", cartItems)
-    
+  const { cartItems, addToCart, removeFromCart, clearCart } = useCart();
+  console.log("Items in cart", cartItems);
+
   const navigate = useNavigate();
   const url = import.meta.env.VITE_BACKEND_API;
   const [personClicked, setPersonClicked] = useState(true);
@@ -71,7 +71,7 @@ const ProfilePage = () => {
           <span className="text-gray-500">{user?.email}</span>
         </div>
       </div>
-     
+
       <div className="flex flex-col gap-4">
         {/* buttons */}
         <div className="mt-8 flex">
@@ -105,7 +105,7 @@ const ProfilePage = () => {
                 wishClicked && "bg-white"
               }`}
             >
-              Wishlist (2)
+              Wishlist 
             </button>
           </div>
 
