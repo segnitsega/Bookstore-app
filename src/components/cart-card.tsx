@@ -1,27 +1,62 @@
 import { RiDeleteBin5Line } from "react-icons/ri";
 import { Button } from "./ui/button";
 import { useState } from "react";
+import axios from "axios";
+import { toast } from "sonner";
 
 interface CartProp {
+  bookId: string;
   imageUrl: string;
   title: string;
   price: number;
   author: string;
   description: string;
+  onDelete: () => void;
 }
+const url = import.meta.env.VITE_BACKEND_API;
+
 const CartCard = (book: CartProp) => {
-  // const [count, setCount] = useState(1);
+  const [loading, setLoading] = useState(false);
+
+  const handleBookDelete = async (bookId: string) => {
+    // console.log("deleting a book with id: ", bookId)
+    try {
+      setLoading(true);
+      const response = await axios.delete(`${url}/cart/remove/${bookId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      if (response.status === 200) {
+        setLoading(false);
+        toast("Book removed from cart");
+        book.onDelete()
+      }
+    } catch (e) {
+      setLoading(false)
+      toast("Book not removed try again");
+      console.log(e);
+    }
+  };
+
   return (
     <div className="flex gap-10">
       <div className="flex flex-col ">
         <div className="flex gap-4 rounded-md border shadow p-4">
-          <img src={book.imageUrl} alt="Book image" className="w-1/10  rounded-lg" />
+          <img
+            src={book.imageUrl}
+            alt="Book image"
+            className="w-1/10  rounded-lg"
+          />
           <div className="w-full">
             <div className="flex items-center justify-between w-full">
               <h1 className="text-slate-800 font-bold">{book.title}</h1>
               <RiDeleteBin5Line
+                onClick={() => handleBookDelete(book.bookId)}
                 size={30}
-                className="text-red-500 bg-black p-1 rounded-md cursor-pointer hover:bg-gray-500"
+                className={`${
+                  loading ? "text-red-400 bg-gray-400" : "text-red-500 bg-black"
+                }  p-1 rounded-md cursor-pointer hover:bg-gray-500`}
               />
             </div>
 
@@ -32,7 +67,7 @@ const CartCard = (book: CartProp) => {
                 <p>{book.description}</p>
               </div>
               <div>
-                <p className="text-amber-500 font-bold">{`$${book.price }`}</p>
+                <p className="text-amber-500 font-bold">{`$${book.price}`}</p>
               </div>
             </div>
           </div>
