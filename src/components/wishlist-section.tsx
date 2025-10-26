@@ -14,6 +14,7 @@ const url = import.meta.env.VITE_BACKEND_API;
 const WishlistSection = () => {
   const [loading, setLoading] = useState(false);
   const [books, setBooks] = useState([]);
+  const [wishlistReload, setWishlistReload] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -28,7 +29,7 @@ const WishlistSection = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [wishlistReload]);
 
   return (
     <div className="border rounded-lg shadow p-4">
@@ -47,6 +48,7 @@ const WishlistSection = () => {
               bookRating={book.book.bookRating}
               bookPrice={book.book.price}
               discountedPrice={book.book.price * 2}
+              wishlistReload={() => setWishlistReload(!wishlistReload)}
             />
           ))}
         </div>

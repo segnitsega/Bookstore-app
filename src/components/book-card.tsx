@@ -17,6 +17,7 @@ interface bookCardProp {
   discountedPrice: number;
   bookId: string;
   book: any;
+  wishlistReload?: ()=>void;
 }
 const url = import.meta.env.VITE_BACKEND_API;
 
@@ -53,6 +54,7 @@ const BookCard = ({
   bookPrice,
   discountedPrice,
   bookId,
+  wishlistReload
 }: bookCardProp) => {
   const [reloadWishlist, setReloadWishlist] = useState(false);
 
@@ -73,6 +75,27 @@ const BookCard = ({
       }
     } catch (e) {
       toast("Book not added, try again");
+      console.log(e);
+    }
+  }
+
+  async function removeFromWishlist(bookId: string) {
+    try {
+      const removed = await axios.delete(
+        `${url}/books/wishlist/${bookId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      if (removed) {
+        if(wishlistReload) wishlistReload();
+        toast("Book removed from wishlist");
+        setReloadWishlist(!reloadWishlist);
+      }
+    } catch (e) {
+      toast("Book not removed, try again");
       console.log(e);
     }
   }
@@ -116,6 +139,7 @@ const BookCard = ({
       </Link>
       {wishlist.find((item: any) => item.bookId === bookId) ? (
         <FaHeart
+          onClick={() => removeFromWishlist(bookId)}
           className="absolute top-2 right-2 bg-white/40 p-2 rounded-2xl text-red-500 "
           size={40}
         />
