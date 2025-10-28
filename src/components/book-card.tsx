@@ -17,33 +17,7 @@ interface bookCardProp {
   discountedPrice: number;
   bookId: string;
   book: any;
-  wishlistReload?: ()=>void;
-}
-const url = import.meta.env.VITE_BACKEND_API;
-
-async function handleAddToCart(bookId: string) {
-  console.log("Add to cart ran.");
-  // const response = await addToCart(bookId);
-  try {
-    const response = await axios.post(
-      `${url}/cart/add`,
-      { bookId },
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
-    if (response.status === 201) {
-      toast("✅ Book added to cart");
-    }
-  } catch (err: any) {
-    if (err.response.status === 400) {
-      toast("❌ The book is already in cart, add another book");
-    } else {
-      toast("❌ Book not added to cart, try again");
-    }
-  }
+  wishlistReload?: () => void;
 }
 
 const BookCard = ({
@@ -54,9 +28,37 @@ const BookCard = ({
   bookPrice,
   discountedPrice,
   bookId,
-  wishlistReload
+  wishlistReload,
 }: bookCardProp) => {
   const [reloadWishlist, setReloadWishlist] = useState(false);
+
+  const url = import.meta.env.VITE_BACKEND_API;
+
+  async function handleAddToCart(bookId: string) {
+    console.log("Add to cart ran.");
+    // const response = await addToCart(bookId);
+    try {
+      const response = await axios.post(
+        `${url}/cart/add`,
+        { bookId },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      if (response.status === 201) {
+        toast("✅ Book added to cart");
+        setReloadCartItems(prev => !prev)
+      }
+    } catch (err: any) {
+      if (err.response.status === 400) {
+        toast("❌ The book is already in cart, add another book");
+      } else {
+        toast("❌ Book not added to cart, try again");
+      }
+    }
+  }
 
   async function addToWishlist(bookId: string) {
     try {
@@ -81,16 +83,13 @@ const BookCard = ({
 
   async function removeFromWishlist(bookId: string) {
     try {
-      const removed = await axios.delete(
-        `${url}/books/wishlist/${bookId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const removed = await axios.delete(`${url}/books/wishlist/${bookId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       if (removed) {
-        if(wishlistReload) wishlistReload();
+        if (wishlistReload) wishlistReload();
         toast("Book removed from wishlist");
         setReloadWishlist(!reloadWishlist);
       }
@@ -103,22 +102,8 @@ const BookCard = ({
   const token = localStorage.getItem("token") as string;
   const userId = JSON.parse(atob(token.split(".")[1])).id;
 
-  const { cartItems, addToCart, removeFromCart, clearCart } = useCart();
+  const { cartItems, setReloadCartItems, reloadCartItems } = useCart();
   const [wishlist, setWishlist] = useState([]);
-
-  useEffect(() => {
-    async function getCartItems() {
-      const endPoint = `/user/cart/${userId}`;
-      try {
-        const response = await axios(`${url}${endPoint}`);
-        response.data.cartItems.map((item) => addToCart(item));
-        // console.log("Here is wishlist items", wishlist.data.wishlistBooks)
-      } catch (err: any) {
-        console.log("No books in cart", err);
-      }
-    }
-    getCartItems();
-  }, []);
 
   useEffect(() => {
     async function getWishlist() {

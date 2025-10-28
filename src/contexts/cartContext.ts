@@ -11,6 +11,9 @@ type CartContextProps = {
   addToCart: (item: CartItem) => void;
   removeFromCart: (id: string) => void;
   clearCart: () => void;
+  getCartCount: () => number;
+  reloadCartItems: boolean;
+  setReloadCartItems: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const CartContext = createContext<CartContextProps | null>(null);

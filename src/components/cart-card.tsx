@@ -1,8 +1,8 @@
 import { RiDeleteBin5Line } from "react-icons/ri";
-import { Button } from "./ui/button";
 import { useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
+import { useCart } from "@/contexts/cartContext";
 
 interface CartProp {
   bookId: string;
@@ -11,7 +11,6 @@ interface CartProp {
   price: number;
   author: string;
   description: string;
-  onDelete: () => void;
 }
 const url = import.meta.env.VITE_BACKEND_API;
 
@@ -19,7 +18,6 @@ const CartCard = (book: CartProp) => {
   const [loading, setLoading] = useState(false);
 
   const handleBookDelete = async (bookId: string) => {
-    // console.log("deleting a book with id: ", bookId)
     try {
       setLoading(true);
       const response = await axios.delete(`${url}/cart/remove/${bookId}`, {
@@ -30,14 +28,15 @@ const CartCard = (book: CartProp) => {
       if (response.status === 200) {
         setLoading(false);
         toast("Book removed from cart");
-        book.onDelete()
+        setReloadCartItems((prev) => !prev);
       }
     } catch (e) {
-      setLoading(false)
+      setLoading(false);
       toast("Book not removed try again");
       console.log(e);
     }
   };
+  const { setReloadCartItems } = useCart();
 
   return (
     <div className="flex gap-10">

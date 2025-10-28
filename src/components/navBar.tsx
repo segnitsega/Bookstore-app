@@ -2,12 +2,12 @@ import { IoMdBook } from "react-icons/io";
 import { CiSearch, CiShoppingCart } from "react-icons/ci";
 import { Link } from "react-router-dom";
 import { CgProfile } from "react-icons/cg";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import debounce from "lodash/debounce";
 import axios from "axios";
 import loadingSpinner from "../assets/loading-spinner-bookstore.svg";
 import { BsPerson } from "react-icons/bs";
-
+import { useCart } from "@/contexts/cartContext";
 
 const NavBar = () => {
   const [query, setQuery] = useState("");
@@ -46,6 +46,9 @@ const NavBar = () => {
     fetchBooks(value); // call the debounced function
   };
 
+  const { getCartCount } = useCart();
+  // console.log("the get cart count", getCartCount())
+
   return (
     <div>
       <div className="hidden sticky top-0 z-50 bg-white/3  backdrop-blur-lg border-b md:flex items-center justify-between p-2">
@@ -82,13 +85,12 @@ const NavBar = () => {
               />
             </Link>
             <span className="absolute -top-2 -right-3 w-5 h-5 flex items-center justify-center bg-amber-600 text-white text-sm rounded-lg">
-              2
+              {getCartCount()}
             </span>
           </div>
           <Link to="profile">
             {/* <CgProfile size={30} className="text-slate-700  cursor-pointer" /> */}
             <BsPerson size={30} className="text-slate-700  cursor-pointer" />
-    
           </Link>
         </div>
       </div>
