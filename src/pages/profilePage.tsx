@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import spinner from "../assets/spinner.svg";
 import { useCart } from "@/contexts/cartContext";
 
+
 interface userType {
   id: number;
   email: string;
@@ -65,7 +66,7 @@ const ProfilePage = () => {
   return (
     <div className="m-8">
       <div className="flex gap-4">
-        <CgProfile size={50} className="text-slate-700" />
+        <BsPerson size={50} className="text-slate-700" />
         <div>
           <h1 className="text-2xl font-bold">{`${user?.firstName} ${user?.lastName}`}</h1>
           <span className="text-gray-500">{user?.email}</span>

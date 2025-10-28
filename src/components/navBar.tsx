@@ -6,6 +6,8 @@ import { useCallback, useState } from "react";
 import debounce from "lodash/debounce";
 import axios from "axios";
 import loadingSpinner from "../assets/loading-spinner-bookstore.svg";
+import { BsPerson } from "react-icons/bs";
+
 
 const NavBar = () => {
   const [query, setQuery] = useState("");
@@ -84,7 +86,9 @@ const NavBar = () => {
             </span>
           </div>
           <Link to="profile">
-            <CgProfile size={30} className="text-slate-700  cursor-pointer" />
+            {/* <CgProfile size={30} className="text-slate-700  cursor-pointer" /> */}
+            <BsPerson size={30} className="text-slate-700  cursor-pointer" />
+    
           </Link>
         </div>
       </div>
