@@ -1,17 +1,15 @@
 import { Button } from "@/components/ui/button";
-import fansyBook from "../assets/fansyBook.jpeg";
 import { FaArrowLeft } from "react-icons/fa6";
-import { FaStar } from "react-icons/fa";
-import { CiStar } from "react-icons/ci";
-import { HiOutlineBookOpen } from "react-icons/hi2";
+import { FaStar, FaHeart } from "react-icons/fa";
 import { SlCalender } from "react-icons/sl";
 import { CiShoppingCart } from "react-icons/ci";
-import { FaHeart } from "react-icons/fa";
 import type { bookType } from "@/components/best-sellers";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import BookCard from "@/components/book-card";
+import { toast } from "sonner";
+import { useCart } from "@/contexts/cartContext";
 
 const BookDetails = () => {
   const { id } = useParams();
@@ -24,6 +22,8 @@ const BookDetails = () => {
   const [errorByGenre, setErrorByGenre] = useState<
     string | Error | unknown | null
   >(null);
+  const { cartItems, setReloadCartItems, reloadCartItems } = useCart();
+  const [reloadWishlist, setReloadWishlist] = useState(false);
 
   useEffect(() => {
     async function getBook() {
@@ -55,6 +55,71 @@ const BookDetails = () => {
     }
   }, [book]);
 
+  async function handleAddToCart(bookId: any) {
+    console.log("Add to cart ran.");
+    // const response = await addToCart(bookId);
+    try {
+      const response = await axios.post(
+        `${url}/cart/add`,
+        { bookId },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      if (response.status === 201) {
+        toast("✅ Book added to cart");
+        setReloadCartItems((prev) => !prev);
+      }
+    } catch (err: any) {
+      if (err.response.status === 400) {
+        toast("❌ The book is already in cart, add another book");
+      } else {
+        toast("❌ Book not added to cart, try again");
+      }
+    }
+  }
+
+  async function addToWishlist(bookId: string) {
+    try {
+      const added = await axios.post(
+        `${url}/books/wishlist/${bookId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      if (added) {
+        toast("Book added to wishlist");
+        setReloadWishlist(!reloadWishlist);
+      }
+    } catch (e) {
+      toast("Book not added, try again");
+      console.log(e);
+    }
+  }
+
+  // async function removeFromWishlist(bookId: string) {
+  //   try {
+  //     const removed = await axios.delete(`${url}/books/wishlist/${bookId}`, {
+  //       headers: {
+  //         Authorization: `Bearer ${localStorage.getItem("token")}`,
+  //       },
+  //     });
+  //     if (removed) {
+  //       if (wishlistReload) wishlistReload();
+  //       toast("Book removed from wishlist");
+  //       setReloadWishlist(!reloadWishlist);
+  //     }
+  //   } catch (e) {
+  //     toast("Book not removed, try again");
+  //     console.log(e);
+  //   }
+  // }
+
   return (
     <div className="m-8">
       <Button className=" bg-amber-500 cursor-pointer w-20 border hover:border-blue-500 hover:bg-amber-600">
@@ -80,7 +145,6 @@ const BookDetails = () => {
               />
             ))}
             <p>
-             
               <span className="text-gray-500">({book?.reviews} reviews)</span>
             </p>
           </div>
@@ -118,9 +182,19 @@ const BookDetails = () => {
             </div>
           </div>
           <div className="flex gap-4 items-center mt-4">
-            <Button className="w-md bg-amber-500 text-lg border hover:border-blue-500 cursor-pointer hover:bg-amber-600">
-              <CiShoppingCart /> Add to Cart
-            </Button>
+            {cartItems.find((i) => i.bookId === book?.id) ? (
+              <Button className="w-md bg-amber-300 hover:bg-amber-300 text-lg border ">
+                <CiShoppingCart /> In cart
+              </Button>
+            ) : (
+              <Button
+                onClick={() => handleAddToCart(book?.id)}
+                className="w-md bg-amber-500 text-lg border hover:border-blue-500 cursor-pointer hover:bg-amber-600"
+              >
+                <CiShoppingCart /> Add to Cart
+              </Button>
+            )}
+
             <div className="border  border-amber-500 rounded-md py-2 px-8 hover:border-blue-500 cursor-pointer">
               <FaHeart className="text-red-500 " size={20} />
             </div>
@@ -138,21 +212,18 @@ const BookDetails = () => {
       </h1>
 
       <div className="flex gap-6">
-        {
-          bookByGenre?.map((book: bookType, i: number) => (
-            <BookCard
-              key={i}
-              bookId={book.id}
-              bookTitle={book.title}
-              bookUrl={book.imageUrl}
-              bookAuthor={book.author}
-              bookRating={book.bookRating}
-              bookPrice={book.price}
-              discountedPrice={book.price * 2}
-            />
-          ))
-        }
-        
+        {bookByGenre?.map((book: bookType, i: number) => (
+          <BookCard
+            key={i}
+            bookId={book.id}
+            bookTitle={book.title}
+            bookUrl={book.imageUrl}
+            bookAuthor={book.author}
+            bookRating={book.bookRating}
+            bookPrice={book.price}
+            discountedPrice={book.price * 2}
+          />
+        ))}
       </div>
     </div>
   );
