@@ -10,6 +10,7 @@ import { useParams } from "react-router-dom";
 import BookCard from "@/components/book-card";
 import { toast } from "sonner";
 import { useCart } from "@/contexts/cartContext";
+import { CiHeart } from "react-icons/ci";
 
 const BookDetails = () => {
   const { id } = useParams();
@@ -24,6 +25,18 @@ const BookDetails = () => {
   >(null);
   const { cartItems, setReloadCartItems, reloadCartItems } = useCart();
   const [reloadWishlist, setReloadWishlist] = useState(false);
+  const [wishlist, setWishlist] = useState([]);
+
+  const token = localStorage.getItem("token") as string;
+  const userId = JSON.parse(atob(token.split(".")[1])).id;
+
+  useEffect(() => {
+    async function getWishlist() {
+      const wishlist = await axios.get(`${url}/user/wishlist/${userId}`);
+      if (wishlist) setWishlist(wishlist.data.wishlistBooks);
+    }
+    getWishlist();
+  }, [reloadWishlist]);
 
   useEffect(() => {
     async function getBook() {
@@ -81,7 +94,7 @@ const BookDetails = () => {
     }
   }
 
-  async function addToWishlist(bookId: string) {
+  async function addToWishlist(bookId: any) {
     try {
       const added = await axios.post(
         `${url}/books/wishlist/${bookId}`,
@@ -102,23 +115,23 @@ const BookDetails = () => {
     }
   }
 
-  // async function removeFromWishlist(bookId: string) {
-  //   try {
-  //     const removed = await axios.delete(`${url}/books/wishlist/${bookId}`, {
-  //       headers: {
-  //         Authorization: `Bearer ${localStorage.getItem("token")}`,
-  //       },
-  //     });
-  //     if (removed) {
-  //       if (wishlistReload) wishlistReload();
-  //       toast("Book removed from wishlist");
-  //       setReloadWishlist(!reloadWishlist);
-  //     }
-  //   } catch (e) {
-  //     toast("Book not removed, try again");
-  //     console.log(e);
-  //   }
-  // }
+  async function removeFromWishlist(bookId: any) {
+    try {
+      const removed = await axios.delete(`${url}/books/wishlist/${bookId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      if (removed) {
+        // if (wishlistReload) wishlistReload();
+        toast("Book removed from wishlist");
+        setReloadWishlist(!reloadWishlist);
+      }
+    } catch (e) {
+      toast("Book not removed, try again");
+      console.log(e);
+    }
+  }
 
   return (
     <div className="m-8">
@@ -195,8 +208,22 @@ const BookDetails = () => {
               </Button>
             )}
 
-            <div className="border  border-amber-500 rounded-md py-2 px-8 hover:border-blue-500 cursor-pointer">
-              <FaHeart className="text-red-500 " size={20} />
+            <div className="border  border-amber-500 rounded-md py-2 px-8 hover:border-amber-600 cursor-pointer">
+              {wishlist.find((item: any) => item.bookId === book?.id) ? (
+                <FaHeart
+                  onClick={() => removeFromWishlist(book?.id)}
+                  className="text-red-500"
+                  size={20}
+                />
+              ) : (
+                <CiHeart
+                  onClick={() => addToWishlist(book?.id)}
+                  className="text-red-500 hover:text-red-600"
+                  size={20}
+                />
+              )}
+
+              {/* <FaHeart className="text-red-500 " size={20} /> */}
             </div>
           </div>
           <span className="bg-green-50 p-2 rounded-md text-gray-500">
