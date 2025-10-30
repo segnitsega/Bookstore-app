@@ -10,16 +10,16 @@ import StartPage from "./pages/startPage";
 import SignUp from "./pages/SignUp";
 import ProtectedRoute from "./utils/protectedRoute";
 import { Toaster } from "sonner";
-  
+
 const App = () => {
   return (
     <div>
       <BrowserRouter>
-        <Toaster position="top-center"/>
+        <Toaster position="top-center" />
         <Routes>
           <Route index element={<StartPage />} />
+          <Route path="signin" element={<SignIn />} />
           <Route path="/" element={<Layout />}>
-            <Route path="signin" element={<SignIn />} />
             <Route path="signup" element={<SignUp />} />
             <Route
               path="/dashboard"
