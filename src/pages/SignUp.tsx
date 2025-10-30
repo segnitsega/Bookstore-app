@@ -28,9 +28,9 @@ const SignUp = () => {
 
   return (
     <div className="flex items-center justify-center bg-white rounded-lg">
-      <div className=" rounded-lg p-6 shadow-md w-[500px]">
+      <div className=" rounded-lg p-6 shadow-md  md:w-[500px]">
         <div className="flex flex-col items-center mb-6">
-          <h1 className="text- text-3xl font-bold mb-2">Create Your Account</h1>
+          <h1 className="text- text-2xl md:text-3xl font-bold mb-2">Create Your Account</h1>
           <span className="text-gray-500">
             Start your literary journey with us today
           </span>
