@@ -49,20 +49,21 @@ const Welcome = () => {
           </div>
         </div>
 
-        <h1>
-          <p className="text-amber-600 text-lg md:text-5xl font-bold">
+        <h1 className="text-amber-600 text-center text-xl font-bold sm:hidden">Discover Your Next Great Read</h1>
+        <h1 className="hidden sm:block">
+          <p className=" text-amber-600 text-lg md:text-5xl font-bold">
             Discover Your Next
           </p>
           <p className="text-amber-500 text-lg  md:text-5xl font-bold">
             Great Read
           </p>
-        </h1>
-        <p className="text-gray-600 text-sm  md:text-xl md:text-balance">
+        </h1> 
+        <p className="text-gray-600 text-sm  text-center md:text-xl sm:text-start">
           Explore thousands of books, from bestselling novels to hidden gems.
           Your perfect book is waiting to be discovered.
         </p>
         <div className="flex relative gap-2">
-          <div className="flex items-center w-[180px] py-1 px-1 md:px-2 border-1 border-orange-300 shadow gap-2 rounded-md lg:w-[500px]">
+          <div className="flex items-center w-[300px] sm:w-[180px] py-1 px-1 md:px-2 border-1 border-orange-300 shadow gap-2 rounded-md lg:w-[500px]">
             <CiSearch size={20} className="text-gray-500" />
             <input
               type="text"
@@ -73,11 +74,11 @@ const Welcome = () => {
             />
           </div>
           <Button
-          disabled={loading}
+            disabled={loading}
             className="text-white disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer border bg-amber-600 hover:border-blue-500 hover:bg-amber-500"
             onClick={() => fetchBooks(query)}
           >
-            { loading ? "Searching.." : "Search"}
+            {loading ? "Searching.." : "Search"}
           </Button>
         </div>
 
@@ -108,20 +109,20 @@ const Welcome = () => {
         <div className="flex gap-2">
           <Link
             to="/books"
-            className="text-white text-center  bg-amber-600 w-[100px]  md:w-[120px] cursor-pointer border hover:border-blue-500 hover:bg-amber-500 rounded"
+            className="text-white text-center p-2  bg-amber-600 w-[150px]  md:w-[120px] cursor-pointer border hover:border-blue-500 hover:bg-amber-500 rounded"
           >
             Browse Books
           </Link>
           <Link
             to="/books/?filter=bestSellers"
-            className="text-blue-500 bg-white border-1 border-amber-200 md:w-[150px] text-xs md:text-lg hover:bg-gray-100 hover:text-gray-800 cursor-pointer rounded"
+            className="text-blue-500 bg-white border-1 text-center border-amber-200 w-[150px]  md:text-lg hover:bg-gray-100 hover:text-gray-800 cursor-pointer rounded"
           >
             View Bestsellers
           </Link>
         </div>
       </div>
 
-      <div className="relative ml-2 md:ml-0 mt-8 md:mt-0">
+      <div className="relative ml-12 md:ml-0 mt-8 md:mt-0">
         <div className="absolute -left-4 flex text-xs md:text-lg  items-center md:gap-2 md:p-1 bg-white w-[100px] md:w-[150px] rounded-md ">
           <IoMdBook size={25} className="text-amber-600" />
           <span>10,000+ Books</span>

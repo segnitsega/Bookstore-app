@@ -1,10 +1,9 @@
-import addToCart from "@/utils/add-to-cart";
 import { Button } from "./ui/button";
 import { CiHeart } from "react-icons/ci";
 import { FaStar, FaHeart } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useCart } from "@/contexts/cartContext";
 import axios from "axios";
 
@@ -36,7 +35,6 @@ const BookCard = ({
 
   async function handleAddToCart(bookId: string) {
     console.log("Add to cart ran.");
-    // const response = await addToCart(bookId);
     try {
       const response = await axios.post(
         `${url}/cart/add`,
@@ -102,7 +100,7 @@ const BookCard = ({
   const token = localStorage.getItem("token") as string;
   const userId = JSON.parse(atob(token.split(".")[1])).id;
 
-  const { cartItems, setReloadCartItems, reloadCartItems } = useCart();
+  const { cartItems, setReloadCartItems } = useCart();
   const [wishlist, setWishlist] = useState([]);
 
   useEffect(() => {
@@ -114,12 +112,12 @@ const BookCard = ({
   }, [reloadWishlist]);
 
   return (
-    <div className="relative border border-gray-200 rounded-xl flex flex-col overflow-hidden cursor-pointer hover:shadow-lg hover:shadow-blue-100">
+    <div className="w-[300px] md:w-[600px] relative border border-gray-200 rounded-xl flex flex-col overflow-hidden cursor-pointer hover:shadow-lg hover:shadow-blue-100">
       <Link to={`/books/${bookId}`}>
         <img
           src={bookUrl}
           alt="Book image"
-          className="w-[350px] h-[250px] md:w-[600px] md:h-[400px] rounded-lg duration-1000 hover:scale-105 cursor-pointer"
+          className=" md:h-[400px] w-[300px] sm:w-[600px] rounded-lg duration-1000 hover:scale-105 cursor-pointer"
         />
       </Link>
       {wishlist.find((item: any) => item.bookId === bookId) ? (
@@ -156,7 +154,7 @@ const BookCard = ({
         </Link>
         <div className="flex justify-between">
           <Link to={`/books/${bookId}`} className="text-amber-600 font-bold">
-            ${bookPrice}{" "}
+            ${bookPrice}{" "} 
             <span className="line-through text-gray-500">
               ${discountedPrice}
             </span>
