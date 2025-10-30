@@ -112,12 +112,12 @@ const BookCard = ({
   }, [reloadWishlist]);
 
   return (
-    <div className="w-[300px] md:w-[600px] relative border border-gray-200 rounded-xl flex flex-col overflow-hidden cursor-pointer hover:shadow-lg hover:shadow-blue-100">
+    <div className=" max-sm:w-[300px] relative border border-gray-200 rounded-xl flex flex-col overflow-hidden cursor-pointer hover:shadow-lg hover:shadow-blue-100">
       <Link to={`/books/${bookId}`}>
         <img
           src={bookUrl}
           alt="Book image"
-          className=" md:h-[400px] w-[300px] sm:w-[600px] rounded-lg duration-1000 hover:scale-105 cursor-pointer"
+          className=" md:h-[400px]  max-sm:w-[300px] sm:w-[600px] rounded-lg duration-1000 hover:scale-105 cursor-pointer"
         />
       </Link>
       {wishlist.find((item: any) => item.bookId === bookId) ? (

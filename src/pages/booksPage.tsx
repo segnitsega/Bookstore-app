@@ -149,8 +149,8 @@ const BooksPage = () => {
         ) : (
           ""
         )}
-        {results.length > 0 ? (
-          <div className="grid grid-cols-4 grid-row-2 gap-4">
+        {/* {results.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-4 grid-row-2 gap-4" >
             {results.map((book: bookType, index) => (
               <BookCard
                 key={index}
@@ -164,8 +164,8 @@ const BooksPage = () => {
               />
             ))}
           </div>
-        ) : (
-          <div className="grid grid-cols-4 grid-row-2 gap-4">
+        ) : ( */}
+          <div className="grid grid-cols-1 sm:grid-cols-4 grid-row-2 gap-4">
             {books &&
               books.map((book: bookType, index) => (
                 <BookCard
@@ -180,7 +180,7 @@ const BooksPage = () => {
                 />
               ))}
           </div>
-        )}
+        {/* )} */}
       </div>
     </div>
   );
