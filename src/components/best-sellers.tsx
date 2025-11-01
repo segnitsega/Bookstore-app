@@ -1,9 +1,5 @@
 import { Button } from "./ui/button";
 import { FaArrowRight } from "react-icons/fa";
-// import { FaHeart } from "react-icons/fa";
-// import books from "../assets/books.jpg";
-// import { CiHeart, CiStar } from "react-icons/ci";
-// import { FaStar } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import BookCard from "./book-card";
@@ -65,7 +61,7 @@ const Bestsellers = () => {
               View All Bestsellers
             </Button>
           </Link>
-          <FaArrowRight className="hidden sm:block absolute top-2.5 left-43" />
+          <FaArrowRight className="hidden sm:block absolute top-2.5 left-43 sm:left-46" />
         </div>
       </div>
       <div className="flex flex-col md:flex-row gap-6">
