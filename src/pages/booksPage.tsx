@@ -10,7 +10,7 @@ import { useSearchParams } from "react-router-dom";
 
 const BooksPage = () => {
   const [searchParams] = useSearchParams();
-  const sort = searchParams.get("sort");
+  // const sort = searchParams.get("sort");
   const genre = searchParams.get("genre");
   const maxPrice = searchParams.get("maxPrice");
   const minPrice = searchParams.get("minPrice");
@@ -26,8 +26,8 @@ const BooksPage = () => {
   const url = import.meta.env.VITE_BACKEND_API;
   const [books, setBooks] = useState<[] | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | Error | unknown | null>(null);
-
+  const [error, setError] = useState<string | null>(null);
+  console.log(results);
   const limit = 8;
   const fetchBooks = async (q: string) => {
     try {
@@ -149,9 +149,9 @@ const BooksPage = () => {
         ) : (
           ""
         )}
-        {/* {results.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-4 grid-row-2 gap-4" >
-            {results.map((book: bookType, index) => (
+        <div className="grid grid-cols-1 sm:grid-cols-4 grid-row-2 gap-4">
+          {books &&
+            books.map((book: bookType, index) => (
               <BookCard
                 key={index}
                 bookId={book.id}
@@ -163,24 +163,7 @@ const BooksPage = () => {
                 discountedPrice={book.price * 2}
               />
             ))}
-          </div>
-        ) : ( */}
-          <div className="grid grid-cols-1 sm:grid-cols-4 grid-row-2 gap-4">
-            {books &&
-              books.map((book: bookType, index) => (
-                <BookCard
-                  key={index}
-                  bookId={book.id}
-                  bookTitle={book.title}
-                  bookUrl={book.imageUrl}
-                  bookAuthor={book.author}
-                  bookRating={book.bookRating}
-                  bookPrice={book.price}
-                  discountedPrice={book.price * 2}
-                />
-              ))}
-          </div>
-        {/* )} */}
+        </div>
       </div>
     </div>
   );

@@ -19,7 +19,7 @@ const Filter = () => {
   const [minPrice, setMinPrice] = useState(0);
   const [price, setPrice] = useState(150);
   const [rating, setRating] = useState(3);
-
+  console.log(searchParams)
   const applyFilter = () => {
     setSearchParams({
       minPrice: String(minPrice),

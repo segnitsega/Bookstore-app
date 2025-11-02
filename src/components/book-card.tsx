@@ -15,7 +15,6 @@ interface bookCardProp {
   bookPrice: number;
   discountedPrice: number;
   bookId: string;
-  book: any;
   wishlistReload?: () => void;
 }
 

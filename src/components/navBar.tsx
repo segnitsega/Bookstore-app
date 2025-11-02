@@ -1,8 +1,7 @@
 import { IoMdBook } from "react-icons/io";
 import { CiSearch, CiShoppingCart } from "react-icons/ci";
 import { Link } from "react-router-dom";
-import { CgProfile } from "react-icons/cg";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import debounce from "lodash/debounce";
 import axios from "axios";
 import loadingSpinner from "../assets/loading-spinner-bookstore.svg";

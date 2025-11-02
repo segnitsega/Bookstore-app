@@ -7,8 +7,8 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
   const [cartItems, setCartItems] = useState<any>([]);
 
   const addToCart = (item: any) => {
-    setCartItems((prev) => {
-      const existing = prev.find((i) => i.id === item.id);
+    setCartItems((prev: any) => {
+      const existing = prev.find((i: any) => i.id === item.id);
       if (existing) {
         return prev;
       }
@@ -17,7 +17,7 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
   };
 
   const removeFromCart = (id: string) => {
-    setCartItems((prev) => prev.filter((i) => i.id !== id));
+    setCartItems((prev: any) => prev.filter((i: any) => i.id !== id));
   };
 
   

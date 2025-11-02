@@ -2,43 +2,13 @@ import CartCard from "@/components/cart-card";
 import OrderSummary from "@/components/order-summary";
 import { Button } from "@/components/ui/button";
 import { FaArrowLeft } from "react-icons/fa";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import spinner from "../assets/spinner.svg";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "@/contexts/cartContext";
 
-const url = import.meta.env.VITE_BACKEND_API;
 const CartPage = () => {
-  const [reload, setReload] = useState(false);
   const navigate = useNavigate();
   let totalPrice = 0;
-  const [loading, setLoading] = useState(true);
-  const [cartBooks, setCartBooks] = useState<[] | null>(null);
-  const { cartItems, setReloadCartItems, reloadCartItems } = useCart();
-
-  // const getCartItems = async () => {
-  //   const token = localStorage.getItem("token");
-  //   try {
-  //     const response = await axios.get(`${url}/cart`, {
-  //       headers: {
-  //         authorization: `Bearer ${token}`,
-  //       },
-  //     });
-  //     // setLoading(false);
-  //     setCartBooks(response.data.cartItems);
-  //     // console.log("Cart items", response.data.cartItems);
-  //     return response.data.cartItems;
-  //   } catch (e) {
-  //     console.log(e);
-  //   } finally{
-  //     setLoading(false);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   getCartItems();
-  // }, [reload]);
+  const { cartItems } = useCart();
 
   return (
     <div className="m-8">
@@ -52,7 +22,7 @@ const CartPage = () => {
         <FaArrowLeft className="relative -top- right-42 text-white text-sm" />
         <div>
           <h1 className="text-slate-800 text-3xl font-bold">Shopping Cart</h1>
-          <span className="text-gray-500">{cartBooks?.length} items</span>
+          <span className="text-gray-500">{cartItems.length} items</span>
         </div>
       </div>
       <div className="flex gap-4">

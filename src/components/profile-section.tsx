@@ -37,6 +37,7 @@ const Profile = () => {
           console.log("Form data:", values);
           try {
             const response = await axios.post(`${url}/user/update-profile/${userId}`, values);
+            console.log(response)
             toast("Profile updated successfully")
           } catch (error) {
             toast("Profile not updated, try again")

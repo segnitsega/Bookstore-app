@@ -59,7 +59,6 @@ const FeaturedBooks = () => {
         {featuredBooks &&
           featuredBooks.map((book: bookType, index: number) => (
             <BookCard
-              book={book}
               key={index}
               bookId={book.id}
               bookTitle={book.title}

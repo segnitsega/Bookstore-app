@@ -23,10 +23,11 @@ const BookDetails = () => {
   const [errorByGenre, setErrorByGenre] = useState<
     string | Error | unknown | null
   >(null);
-  const { cartItems, setReloadCartItems, reloadCartItems } = useCart();
+  const { cartItems, setReloadCartItems } = useCart();
   const [reloadWishlist, setReloadWishlist] = useState(false);
   const [wishlist, setWishlist] = useState([]);
 
+  console.log(loading, error, loadingByGenre, errorByGenre)
   const token = localStorage.getItem("token") as string;
   const userId = JSON.parse(atob(token.split(".")[1])).id;
 

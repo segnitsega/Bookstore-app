@@ -5,7 +5,6 @@ import { FaRegHeart } from "react-icons/fa";
 import ProfileSection from "@/components/profile-section";
 import WishlistSection from "@/components/wishlist-section";
 import Orders from "@/components/orders-section";
-import { CgProfile } from "react-icons/cg";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import spinner from "../assets/spinner.svg";
@@ -21,7 +20,7 @@ interface userType {
 }
 
 const ProfilePage = () => {
-  const { cartItems, addToCart, removeFromCart, clearCart } = useCart();
+  const { cartItems } = useCart();
   console.log("Items in cart", cartItems);
 
   const navigate = useNavigate();
