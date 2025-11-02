@@ -18,7 +18,7 @@ const BookDetails = () => {
   const [book, setBook] = useState<bookType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | Error | unknown | null>(null);
-  const [bookByGenre, setBookByGenre] = useState<bookType | null>(null);
+  const [bookByGenre, setBookByGenre] = useState<bookType[] | null>(null);
   const [loadingByGenre, setLoadingByGenre] = useState(true);
   const [errorByGenre, setErrorByGenre] = useState<
     string | Error | unknown | null
