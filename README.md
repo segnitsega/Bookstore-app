@@ -38,3 +38,6 @@ An e-commerce web application for browsing, buying, and managing books — built
 
 ---
 
+### Live demo 
+ - https://bookstore-app12.netlify.app/
+
