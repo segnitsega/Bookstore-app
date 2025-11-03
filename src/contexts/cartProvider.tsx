@@ -28,8 +28,14 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
 
 
   const url = import.meta.env.VITE_BACKEND_API;
-  const token = localStorage.getItem("token") as string;
-  const userId = JSON.parse(atob(token.split(".")[1])).id;
+const token = localStorage.getItem("token") as string;
+  let userId = ""
+  if (token){
+    userId = JSON.parse(atob(token.split(".")[1])).id;
+
+  } else{
+    console.log("no token")
+  }
 
   useEffect(() => {
     async function getCartItems() {

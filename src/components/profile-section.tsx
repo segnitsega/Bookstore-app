@@ -21,7 +21,13 @@ const ProfileUpdateSchema = Yup.object().shape({
 
 const url = import.meta.env.VITE_BACKEND_API;
 const token = localStorage.getItem("token") as string;
-const userId = JSON.parse(atob(token.split(".")[1])).id;
+  let userId = ""
+  if (token){
+    userId = JSON.parse(atob(token.split(".")[1])).id;
+
+  } else{
+    console.log("no token")
+  }
 
 const Profile = () => {
   return (

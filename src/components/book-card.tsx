@@ -97,8 +97,14 @@ const BookCard = ({
   }
 
   const token = localStorage.getItem("token") as string;
-  const userId = JSON.parse(atob(token.split(".")[1])).id;
+  let userId = ""
+  if (token){
+    userId = JSON.parse(atob(token.split(".")[1])).id;
 
+  } else{
+    console.log("no token")
+  }
+  
   const { cartItems, setReloadCartItems } = useCart();
   const [wishlist, setWishlist] = useState([]);
 

@@ -3,7 +3,13 @@ import axios from "axios";
 import BookCard from "./book-card";
 
 const token = localStorage.getItem("token") as string;
-const userId = JSON.parse(atob(token.split(".")[1])).id;
+  let userId = ""
+  if (token){
+    userId = JSON.parse(atob(token.split(".")[1])).id;
+
+  } else{
+    console.log("no token")
+  }
 const url = import.meta.env.VITE_BACKEND_API;
 
 const WishlistSection = () => {

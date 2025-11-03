@@ -27,9 +27,14 @@ const BookDetails = () => {
   const [reloadWishlist, setReloadWishlist] = useState(false);
   const [wishlist, setWishlist] = useState([]);
 
-  console.log(loading, error, loadingByGenre, errorByGenre)
+  console.log(loading, error, loadingByGenre, errorByGenre);
   const token = localStorage.getItem("token") as string;
-  const userId = JSON.parse(atob(token.split(".")[1])).id;
+  let userId = "";
+  if (token) {
+    userId = JSON.parse(atob(token.split(".")[1])).id;
+  } else {
+    console.log("no token");
+  }
 
   useEffect(() => {
     async function getWishlist() {
