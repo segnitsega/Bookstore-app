@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import axios from "axios";
 import { ErrorMessage, Field, Formik, Form } from "formik";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { useAuth } from "@/contexts/authContext";
@@ -24,16 +26,19 @@ const SignUpSchema = Yup.object().shape({
 const SignUp = () => {
   const url = import.meta.env.VITE_BACKEND_API;
   const navigate = useNavigate();
-  const {login} = useAuth();
+  const { login } = useAuth();
+  const [submitError, setSubmitError] = useState("");
 
   return (
-    <div className="flex items-center justify-center bg-white rounded-lg">
-      <div className=" rounded-lg p-6 shadow-md  md:w-[500px]">
-        <div className="flex flex-col items-center mb-6">
-          <h1 className="text- text-2xl md:text-3xl font-bold mb-2">Create Your Account</h1>
-          <span className="text-gray-500">
-            Start your literary journey with us today
-          </span>
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-amber-50 via-white to-white px-4 py-10">
+      <div className="w-full max-w-xl rounded-2xl border border-amber-100 bg-white p-6 shadow-xl shadow-amber-100/50 md:p-8">
+        <div className="mb-8 space-y-2 text-center">
+          <h1 className="text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">
+            Create your account
+          </h1>
+          <p className="text-sm text-gray-600 md:text-base">
+            Start your literary journey with Bookstore today.
+          </p>
         </div>
 
         <Formik
@@ -46,144 +51,167 @@ const SignUp = () => {
           }}
           validationSchema={SignUpSchema}
           onSubmit={async (values, { setSubmitting }) => {
-            console.log("Form data:", values);
-            console.log(url);
+            setSubmitError("");
             try {
-              const response = await axios.post(
-                `${url}/user/signup`,
-                values
-              );
-              login(response.data.accessToken)
+              const response = await axios.post(`${url}/user/signup`, values);
+              login(response.data.accessToken);
               navigate("/dashboard");
-              console.log("Sign up successful:", response.data);
             } catch (error) {
-              console.error("Error during sign up:", error);
+              if (axios.isAxiosError(error)) {
+                setSubmitError(
+                  error.response?.data?.message ??
+                    "Unable to create your account right now. Please try again."
+                );
+              } else {
+                setSubmitError(
+                  "Unable to create your account right now. Please try again."
+                );
+              }
             } finally {
               setSubmitting(false);
             }
           }}
         >
           {({ isSubmitting }) => (
-            <Form className="space-y-6">
-              <div className="flex gap-2">
+            <Form className="space-y-5">
+              <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <label
                     htmlFor="firstName"
-                    className="block text-sm font-medium"
+                    className="mb-1.5 block text-sm font-medium text-gray-700"
                   >
                     First Name
                   </label>
                   <Field
+                    as={Input}
                     name="firstName"
                     type="text"
                     placeholder="Segni"
-                    className="mt-1 w-full border border-gray-300 px-3 py-2 rounded-md "
+                    className="h-10 border-gray-300 focus-visible:border-amber-500 focus-visible:ring-amber-200"
                   />
                   <ErrorMessage
                     name="firstName"
                     component="div"
-                    className="text-red-500 text-sm mt-1"
+                    className="mt-1 text-sm text-red-500"
                   />
                 </div>
 
                 <div>
                   <label
                     htmlFor="lastName"
-                    className="block text-sm font-medium"
+                    className="mb-1.5 block text-sm font-medium text-gray-700"
                   >
                     Last Name
                   </label>
                   <Field
+                    as={Input}
                     name="lastName"
                     type="text"
                     placeholder="Tsega"
-                    className="mt-1 w-full border border-gray-300 px-3 py-2 rounded-md "
+                    className="h-10 border-gray-300 focus-visible:border-amber-500 focus-visible:ring-amber-200"
                   />
                   <ErrorMessage
                     name="lastName"
                     component="div"
-                    className="text-red-500 text-sm mt-1"
+                    className="mt-1 text-sm text-red-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-sm font-medium">
+                <label
+                  htmlFor="email"
+                  className="mb-1.5 block text-sm font-medium text-gray-700"
+                >
                   Email
                 </label>
                 <Field
+                  as={Input}
                   name="email"
                   type="email"
-                  placeholder="segni@gmail.com"
-                  className="mt-1 w-full border border-gray-300 px-3 py-2 rounded-md "
+                  placeholder="you@example.com"
+                  className="h-10 border-gray-300 focus-visible:border-amber-500 focus-visible:ring-amber-200"
                 />
                 <ErrorMessage
                   name="email"
                   component="div"
-                  className="text-red-500 text-sm mt-1"
+                  className="mt-1 text-sm text-red-500"
                 />
               </div>
 
               <div>
-                <label htmlFor="password" className="block text-sm font-medium">
+                <label
+                  htmlFor="password"
+                  className="mb-1.5 block text-sm font-medium text-gray-700"
+                >
                   Password
                 </label>
                 <Field
+                  as={Input}
                   name="password"
                   type="password"
-                  placeholder="create password"
-                  className="mt-1 w-full border border-gray-300 px-3 py-2 rounded-md"
+                  placeholder="Create a strong password"
+                  className="h-10 border-gray-300 focus-visible:border-amber-500 focus-visible:ring-amber-200"
                 />
                 <ErrorMessage
                   name="password"
                   component="div"
-                  className="text-red-500 text-sm mt-1"
+                  className="mt-1 text-sm text-red-500"
                 />
               </div>
               <div>
                 <label
                   htmlFor="confirmPassword"
-                  className="block text-sm font-medium"
+                  className="mb-1.5 block text-sm font-medium text-gray-700"
                 >
                   Confirm Password
                 </label>
                 <Field
+                  as={Input}
                   name="confirmPassword"
                   type="password"
-                  placeholder="confirm password"
-                  className="mt-1 w-full border border-gray-300 px-3 py-2 rounded-md"
+                  placeholder="Confirm your password"
+                  className="h-10 border-gray-300 focus-visible:border-amber-500 focus-visible:ring-amber-200"
                 />
                 <ErrorMessage
                   name="confirmPassword"
                   component="div"
-                  className="text-red-500 text-sm mt-1"
+                  className="mt-1 text-sm text-red-500"
                 />
               </div>
 
+              {submitError && (
+                <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
+                  {submitError}
+                </p>
+              )}
+
               <Button
                 type="submit"
-                className="w-full bg-amber-600 hover:bg-amber-600 cursor-pointer"
+                className="h-10 w-full cursor-pointer bg-amber-600 font-medium text-white hover:bg-amber-700"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Signing up.." : "Sign up"}
+                {isSubmitting ? "Creating account..." : "Create account"}
               </Button>
             </Form>
           )}
         </Formik>
 
-        <div className="flex flex-col gap-2 mt-8 items-center border-t pt-2">
-          <span className="text-gray-500 ">
+        <div className="mt-8 flex flex-col items-center gap-3 border-t border-gray-100 pt-5">
+          <span className="text-sm text-gray-600">
             Already have an account?
-            <Link to="/signin" className="text-amber-600 cursor-pointer">
-              {" "}
+            <Link
+              to="/signin"
+              className="ml-1 font-medium text-amber-600 transition-colors hover:text-amber-700"
+            >
               Sign In Here
             </Link>
           </span>
 
-          <p className="text-gray-500 text-center my-4">
+          <p className="my-2 text-center text-xs text-gray-500">
             By creating an account, you agree to our{" "}
-            <span className="text-amber-500">Terms of Service</span> and{" "}
-            <span className="text-amber-500">Privacy Policy</span>
+            <span className="font-medium text-amber-600">Terms of Service</span>{" "}
+            and <span className="font-medium text-amber-600">Privacy Policy</span>
           </p>
         </div>
       </div>
