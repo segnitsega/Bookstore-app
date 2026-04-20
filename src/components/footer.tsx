@@ -3,62 +3,85 @@ import { CiFacebook } from "react-icons/ci";
 import { CiTwitter } from "react-icons/ci";
 import { PiInstagramLogoThin } from "react-icons/pi";
 import { CiMail } from "react-icons/ci";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <div className="bg-amber-50 border-t border-gray-200">
-      <div className="flex flex-col md:flex-row mx-4 justify-between  py-8 px-2">
-        <div className="flex flex-col md:gap-4">
-          <div className="flex items-center md:gap-1">
+    <footer className="border-t border-amber-100 bg-gradient-to-b from-amber-50 to-white">
+      <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-10 md:grid-cols-3 md:gap-8">
+        <div className="space-y-4">
+          <div className="flex items-center gap-1.5">
             <IoMdBook size={35} className="text-amber-600" />
-            <h1 className="text-amber-900 font-bold text-lg md:text-2xl">
+            <h1 className="text-xl font-bold tracking-tight text-amber-900 md:text-2xl">
               BookHub
             </h1>
           </div>
 
-          <p className="text-gray-500 max-w-sm ">
+          <p className="max-w-sm text-sm leading-6 text-gray-600">
             Your gateway to endless stories. Discover, explore, and enjoy the
             world's finest collection of books.
           </p>
 
-          <div className="flex gap-4 text-gray-500 text-2xl">
-            <CiFacebook />
-            <CiTwitter />
-            <PiInstagramLogoThin />
-            <CiMail />
+          <div className="flex items-center gap-4 text-2xl text-gray-500">
+            <a href="#" className="transition-colors hover:text-amber-600">
+              <CiFacebook />
+            </a>
+            <a href="#" className="transition-colors hover:text-amber-600">
+              <CiTwitter />
+            </a>
+            <a href="#" className="transition-colors hover:text-amber-600">
+              <PiInstagramLogoThin />
+            </a>
+            <a href="#" className="transition-colors hover:text-amber-600">
+              <CiMail />
+            </a>
           </div>
         </div>
 
-        <div className="flex flex-col md:gap-2">
-          <h1 className="text-amber-900 font-bold text-lg md:text-2xl">
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold text-amber-900 md:text-xl">
             Quick Links
-          </h1>
-          <p className="text-gray-500">Home</p>
-          <p className="text-gray-500">Browse Books</p>
-          <p className="text-gray-500">Shopping Cart</p>
-          <p className="text-gray-500">My Account</p>
+          </h2>
+          <div className="flex flex-col gap-2 text-sm text-gray-600">
+            <Link to="/dashboard" className="transition-colors hover:text-amber-600">
+              Home
+            </Link>
+            <Link to="/books" className="transition-colors hover:text-amber-600">
+              Browse Books
+            </Link>
+            <Link to="/cart" className="transition-colors hover:text-amber-600">
+              Shopping Cart
+            </Link>
+            <Link to="/profile" className="transition-colors hover:text-amber-600">
+              My Account
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-col md:gap-2">
-          <h1 className="text-amber-900 font-bold text-lg md:text-2xl">
-            Customer Service
-          </h1>
-          <p className="text-gray-500">Contact Us</p>
-          <p className="text-gray-500">Shipping Info</p>
-          <p className="text-gray-500">Returns & Exchanges</p>
-          <p className="text-gray-500">FAQ</p>
-        </div>
-      </div>
-      <div className="border-t border-amber-200"></div>
 
-      <div className="flex flex-col md:flex-row text-gray-500 justify-between m-8 mb-0">
-        <p>© 2025 BookHub. All rights reserved.</p>
-        <div className="flex flex-col gap-1 md:flex-row md:gap-8">
-          <p>Privacy Policy</p>
-          <p>Terms of Service</p>
-          <p>Cookie Policy</p>
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold text-amber-900 md:text-xl">
+            Customer Service
+          </h2>
+          <div className="flex flex-col gap-2 text-sm text-gray-600">
+            <p className="transition-colors hover:text-amber-600">Contact Us</p>
+            <p className="transition-colors hover:text-amber-600">Shipping Info</p>
+            <p className="transition-colors hover:text-amber-600">Returns & Exchanges</p>
+            <p className="transition-colors hover:text-amber-600">FAQ</p>
+          </div>
         </div>
       </div>
-    </div>
+
+      <div className="border-t border-amber-200/70">
+        <div className="mx-auto flex w-full max-w-7xl flex-col justify-between gap-3 px-4 py-5 text-sm text-gray-500 md:flex-row md:items-center">
+          <p>© 2026 BookHub. All rights reserved.</p>
+          <div className="flex flex-wrap items-center gap-5">
+            <p className="transition-colors hover:text-amber-600">Privacy Policy</p>
+            <p className="transition-colors hover:text-amber-600">Terms of Service</p>
+            <p className="transition-colors hover:text-amber-600">Cookie Policy</p>
+          </div>
+        </div>
+      </div>
+    </footer>
   );
 };
 
