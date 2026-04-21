@@ -3,34 +3,42 @@ import { MdOutlineLocalShipping } from "react-icons/md";
 import { LuShield } from "react-icons/lu";
 import { CiHeart } from "react-icons/ci";
 
+const highlightCards = [
+  {
+    title: "Free Shipping",
+    description: "Free delivery on orders over $50",
+    icon: MdOutlineLocalShipping,
+  },
+  {
+    title: "Secure Payment",
+    description: "Your payment information is protected",
+    icon: LuShield,
+  },
+  {
+    title: "Curated Selection",
+    description: "Hand-picked books for every reader",
+    icon: CiHeart,
+  },
+];
+
 const Card = () => {
   return (
-    <div className="flex flex-col items-center gap-4 md:flex-row justify-around mt-14 mb-14">
-      <div className=" border border-gray-200 shadow  rounded-md px-6 py-4  md:px-8 md:py-6 flex w-[300px] flex-col items-center md:w-[400px] gap-2">
-        <MdOutlineLocalShipping
-          size={40}
-          className="text-amber-600 bg-amber-100 p-2 rounded-xl"
-        />
-        <h1 className="font-bold">Free Shipping</h1>
-        <p className="text-gray-500">Free delivery on orders over $50</p>
+    <section className="px-4 py-12 md:px-10 md:py-14 lg:px-16">
+      <div className="mx-auto grid w-full max-w-7xl gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {highlightCards.map(({ title, description, icon: Icon }) => (
+          <article
+            key={title}
+            className="group rounded-xl border border-amber-100 bg-white px-6 py-6 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-amber-100/60"
+          >
+            <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-xl bg-amber-100 text-amber-600 transition-colors group-hover:bg-amber-200">
+              <Icon size={30} />
+            </div>
+            <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+            <p className="mt-1 text-sm text-gray-600">{description}</p>
+          </article>
+        ))}
       </div>
-      <div className=" border border-gray-200 shadow rounded-md px-6 py-4  md:px-8 md:py-6 flex w-[300px] flex-col items-center md:w-[400px] gap-2 text-center">
-        <LuShield
-          size={40}
-          className="text-amber-600 bg-amber-100 p-2 rounded-xl"
-        />
-        <h1 className="font-bold">Secure Payment</h1>
-        <p className="text-gray-500">Your payment information is protected</p>
-      </div>
-      <div className=" border border-gray-200 shadow rounded-md px-6 py-4  md:px-8 md:py-6 flex w-[300px] flex-col items-center md:w-[400px] gap-2 text-center">
-        <CiHeart
-          size={40}
-          className="text-amber-600 bg-amber-100 p-2 rounded-xl"
-        />
-        <h1 className="font-bold">Curated Selection</h1>
-        <p className="text-gray-500">Hand-picked books for every reader</p>
-      </div>
-    </div>
+    </section>
   );
 };
 
