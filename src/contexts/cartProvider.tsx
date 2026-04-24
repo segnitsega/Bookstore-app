@@ -1,14 +1,25 @@
 import { useEffect, useState } from "react";
 import type { PropsWithChildren } from "react";
-import { CartContext } from "./cartContext";
+import { CartContext, type CartLine } from "./cartContext";
 import axios from "axios";
 
-export const CartProvider = ({ children }: PropsWithChildren) => {
-  const [cartItems, setCartItems] = useState<any>([]);
+function getUserIdFromToken(): string {
+  const token = localStorage.getItem("token");
+  if (!token) return "";
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return typeof payload?.id === "string" ? payload.id : "";
+  } catch {
+    return "";
+  }
+}
 
-  const addToCart = (item: any) => {
-    setCartItems((prev: any) => {
-      const existing = prev.find((i: any) => i.id === item.id);
+export const CartProvider = ({ children }: PropsWithChildren) => {
+  const [cartItems, setCartItems] = useState<CartLine[]>([]);
+
+  const addToCart = (item: CartLine) => {
+    setCartItems((prev) => {
+      const existing = prev.find((i) => i.id === item.id);
       if (existing) {
         return prev;
       }
@@ -17,44 +28,46 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
   };
 
   const removeFromCart = (id: string) => {
-    setCartItems((prev: any) => prev.filter((i: any) => i.id !== id));
+    setCartItems((prev) => prev.filter((i) => i.id !== id));
   };
 
-  
   const clearCart = () => setCartItems([]);
   const getCartCount = () => cartItems.length;
 
   const [reloadCartItems, setReloadCartItems] = useState(false);
 
-
-  const url = import.meta.env.VITE_BACKEND_API;
-const token = localStorage.getItem("token") as string;
-  let userId = ""
-  if (token){
-    userId = JSON.parse(atob(token.split(".")[1])).id;
-
-  } else{
-    console.log("no token")
-  }
+  const url = import.meta.env.VITE_BACKEND_API as string | undefined;
 
   useEffect(() => {
+    const userId = getUserIdFromToken();
+    if (!userId || !url) {
+      setCartItems([]);
+      return;
+    }
+
     async function getCartItems() {
-      console.log("provider ran")
-      const endPoint = `/user/cart/${userId}`;
       try {
-        const response = await axios(`${url}${endPoint}`);
-        setCartItems(response.data.cartItems)
-        console.log(response.data.cartItems)
-      } catch (err: any) {
-        console.log("No books in cart", err);
+        const response = await axios.get(`${url}/user/cart/${userId}`);
+        setCartItems(response.data.cartItems ?? []);
+      } catch {
+        setCartItems([]);
       }
     }
+
     getCartItems();
-  }, [reloadCartItems]);
+  }, [reloadCartItems, url]);
 
   return (
     <CartContext.Provider
-      value={{ cartItems, addToCart, removeFromCart, clearCart, getCartCount, reloadCartItems, setReloadCartItems }}
+      value={{
+        cartItems,
+        addToCart,
+        removeFromCart,
+        clearCart,
+        getCartCount,
+        reloadCartItems,
+        setReloadCartItems,
+      }}
     >
       {children}
     </CartContext.Provider>

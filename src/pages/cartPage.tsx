@@ -4,55 +4,74 @@ import { Button } from "@/components/ui/button";
 import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "@/contexts/cartContext";
+import { useMemo } from "react";
 
 const CartPage = () => {
   const navigate = useNavigate();
-  let totalPrice = 0;
   const { cartItems } = useCart();
 
+  const subtotal = useMemo(
+    () =>
+      cartItems.reduce(
+        (sum, item) =>
+          sum + (typeof item.book?.price === "number" ? item.book.price : 0),
+        0
+      ),
+    [cartItems]
+  );
+
+  const itemLabel =
+    cartItems.length === 0
+      ? "No items"
+      : cartItems.length === 1
+        ? "1 item"
+        : `${cartItems.length} items`;
+
   return (
-    <div className="m-8">
-      <div className="flex items-center">
+    <div className="mx-auto max-w-6xl p-4 md:m-8 md:p-0">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-800">Shopping Cart</h1>
+          <p className="text-gray-500">{itemLabel}</p>
+        </div>
         <Button
+          type="button"
           onClick={() => navigate("/books")}
-          className=" bg-amber-500 border text-white hover:border-blue-500 cursor-pointer hover:bg-amber-600 px-6"
+          className="w-fit border bg-amber-500 px-6 text-white hover:border-blue-500 hover:bg-amber-600"
         >
+          <FaArrowLeft className="mr-2 inline h-3.5 w-3.5" aria-hidden />
           Continue shopping
         </Button>
-        <FaArrowLeft className="relative -top- right-42 text-white text-sm" />
-        <div>
-          <h1 className="text-slate-800 text-3xl font-bold">Shopping Cart</h1>
-          <span className="text-gray-500">{cartItems.length} items</span>
-        </div>
       </div>
-      <div className="flex gap-4">
-        <div className="flex flex-col gap-4 mt-4">
+
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
+        <div className="flex min-w-0 flex-1 flex-col gap-4">
           {cartItems.length > 0 ? (
-            cartItems.map((book: any) => (
-              <div className="w-[700px]" key={book.id}>
+            cartItems.map((row) => (
+              <div className="w-full max-w-3xl" key={row.id}>
                 <CartCard
-                  bookId={book.id}
-                  imageUrl={book.book.imageUrl}
-                  title={book.book.title}
-                  price={book.book.price}
-                  author={book.book.author}
-                  description={book.book.description}
+                  cartItemId={row.id}
+                  imageUrl={row.book.imageUrl}
+                  title={row.book.title}
+                  price={row.book.price}
+                  author={row.book.author}
+                  description={row.book.description}
                 />
-                <div className="hidden">{(totalPrice += book.book.price)}</div>
               </div>
             ))
           ) : (
-            <div className="flex text-gray-500 text-xl">
-              Your cart is empty.
-            </div>
+            <p className="text-xl text-gray-500">Your cart is empty.</p>
           )}
         </div>
 
-       {cartItems.length > 0 &&  <div className="mt-4">
-          <OrderSummary price={parseFloat(totalPrice.toFixed(2))} />
-        </div>}
+        {cartItems.length > 0 && (
+          <div className="w-full shrink-0 lg:mt-0 lg:w-auto">
+            <OrderSummary price={Number(subtotal.toFixed(2))} />
+          </div>
+        )}
       </div>
     </div>
   );
 };
+
 export default CartPage;

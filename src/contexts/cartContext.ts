@@ -1,14 +1,22 @@
 import { createContext, useContext } from "react";
 
-type CartItem = {
+/** Cart row from API (`GET /user/cart/:id`) with nested `book` */
+export type CartLine = {
   id: string;
-  userId: string;
-  bookId: string;
+  userId?: string;
+  bookId?: string;
+  book: {
+    imageUrl: string;
+    title: string;
+    price: number;
+    author: string;
+    description: string;
+  };
 };
 
 type CartContextProps = {
-  cartItems: CartItem[];
-  addToCart: (item: CartItem) => void;
+  cartItems: CartLine[];
+  addToCart: (item: CartLine) => void;
   removeFromCart: (id: string) => void;
   clearCart: () => void;
   getCartCount: () => number;

@@ -1,32 +1,36 @@
 import { Button } from "./ui/button";
 
-interface props{
-  price: number
+const money = (n: number) =>
+  n.toLocaleString("en-US", { style: "currency", currency: "USD" });
+
+interface props {
+  price: number;
 }
 
-const OrderSummary = ({price}: props) => {
-  const tax = 0.07*price
+const OrderSummary = ({ price }: props) => {
+  const tax = 0.07 * price;
+  const grandTotal = tax + price;
   return (
-    <div className="p-4 w-[400px] border rounded-lg flex flex-col gap-2 ">
-      <h1 className="text-slate-800 font-bold text-2xl">Order Summary</h1>
-      <div className="flex justify-between items-center">
-        <p className="text-lg">Total price</p>
-        <p>{price}</p>
+    <div className="flex w-full max-w-md flex-col gap-2 rounded-lg border p-4 lg:w-[400px]">
+      <h2 className="text-2xl font-bold text-slate-800">Order Summary</h2>
+      <div className="flex items-center justify-between">
+        <p className="text-lg">Subtotal</p>
+        <p className="tabular-nums">{money(price)}</p>
       </div>
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <p className="text-lg">Shipping</p>
         <p>Free</p>
       </div>
-      <div className="flex justify-between items-center">
-        <p className="text-lg">Tax</p>
-        <p>{tax}</p>
+      <div className="flex items-center justify-between">
+        <p className="text-lg">Tax (7%)</p>
+        <p className="tabular-nums">{money(tax)}</p>
       </div>
-      <div className="my-4 border-t border-gray-400"></div>
-      <div className="flex justify-between items-center">
-        <p className="text-lg">Total</p>
-        <p>{(tax + price).toFixed(2)}</p>
+      <div className="my-4 border-t border-gray-400" />
+      <div className="flex items-center justify-between">
+        <p className="text-lg font-semibold">Total</p>
+        <p className="tabular-nums font-semibold">{money(grandTotal)}</p>
       </div>
-      <Button className="bg-amber-500 hover:bg-amber-500 border hover:border-blue-500 cursor-pointer">
+      <Button className="cursor-pointer border bg-amber-500 hover:border-blue-500 hover:bg-amber-500">
         Proceed to Checkout
       </Button>
     </div>
