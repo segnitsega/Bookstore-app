@@ -2,6 +2,7 @@ import BooksPage from "./pages/booksPage";
 import LandingPage from "./pages/landingPage";
 import BookDetails from "./pages/bookDetails";
 import CartPage from "./pages/cartPage";
+import CheckoutSuccessPage from "./pages/checkoutSuccess";
 import ProfilePage from "./pages/profilePage";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./pages/layout";
@@ -50,6 +51,14 @@ const App = () => {
               element={
                 <ProtectedRoute>
                   <CartPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/checkout/success"
+              element={
+                <ProtectedRoute>
+                  <CheckoutSuccessPage />
                 </ProtectedRoute>
               }
             />

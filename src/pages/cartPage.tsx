@@ -66,7 +66,10 @@ const CartPage = () => {
 
         {cartItems.length > 0 && (
           <div className="w-full shrink-0 lg:mt-0 lg:w-auto">
-            <OrderSummary price={Number(subtotal.toFixed(2))} />
+            <OrderSummary
+              price={Number(subtotal.toFixed(2))}
+              disabled={cartItems.length === 0}
+            />
           </div>
         )}
       </div>
