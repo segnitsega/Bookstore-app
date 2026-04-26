@@ -63,3 +63,14 @@ export async function getOrderBySessionId(
   );
   return res.data.order;
 }
+
+/** Fetch the authenticated user's order history (newest first). */
+export async function getMyOrders(): Promise<CheckoutOrder[]> {
+  if (!API) throw new Error("VITE_BACKEND_API is not configured");
+
+  const res = await axios.get<{ orders: CheckoutOrder[] }>(
+    `${API}/payment/orders`,
+    { headers: authHeaders() }
+  );
+  return res.data.orders ?? [];
+}

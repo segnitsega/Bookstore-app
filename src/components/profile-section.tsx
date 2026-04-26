@@ -1,12 +1,10 @@
 import { FiSettings } from "react-icons/fi";
+import { LuBook } from "react-icons/lu";
 import { Button } from "./ui/button";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { LuBook } from "react-icons/lu";
 import axios from "axios";
 import { toast } from "sonner";
-
-
 
 const ProfileUpdateSchema = Yup.object().shape({
   firstName: Yup.string()
@@ -15,39 +13,63 @@ const ProfileUpdateSchema = Yup.object().shape({
   lastName: Yup.string()
     .min(3, "Last name must be at least 3 characters")
     .required("Last name is required"),
-  state: Yup.string().min(3, "state name must be at least 3 characters"),
+  state: Yup.string().min(3, "State name must be at least 3 characters"),
   city: Yup.string().min(3, "City name must be at least 3 characters"),
 });
 
 const url = import.meta.env.VITE_BACKEND_API;
-const token = localStorage.getItem("token") as string;
-  let userId = ""
-  if (token){
-    userId = JSON.parse(atob(token.split(".")[1])).id;
 
-  } else{
-    console.log("no token")
-  }
+interface ProfileUser {
+  id: string;
+  email: string;
+  firstName: string | null;
+  lastName: string | null;
+  city?: string | null;
+  state?: string | null;
+}
 
-const Profile = () => {
+interface Props {
+  user: ProfileUser | null;
+}
+
+const ProfileSection = ({ user }: Props) => {
+  const initialValues = {
+    firstName: user?.firstName ?? "",
+    lastName: user?.lastName ?? "",
+    state: user?.state ?? "",
+    city: user?.city ?? "",
+  };
+
   return (
-    <div className="border shadow p-4 rounded-lg flex flex-col gap-4">
-      <div className="flex gap-2 items-center text-slate-1000 text-lg">
+    <div className="flex flex-col gap-4 rounded-lg border p-4 shadow">
+      <div className="flex items-center gap-2 text-lg text-slate-900">
         <FiSettings />
-        <h1>Profile Information</h1>
+        <h2 className="font-semibold">Profile Information</h2>
       </div>
+
       <Formik
-        initialValues={{ firstName: "", lastName: "", state: "", city: "" }}
+        enableReinitialize
+        initialValues={initialValues}
         validationSchema={ProfileUpdateSchema}
         onSubmit={async (values, { setSubmitting }) => {
-          console.log("Form data:", values);
+          if (!user?.id) {
+            toast.error("You must be signed in to update your profile.");
+            setSubmitting(false);
+            return;
+          }
           try {
-            const response = await axios.post(`${url}/user/update-profile/${userId}`, values);
-            console.log(response)
-            toast("Profile updated successfully")
+            const token = localStorage.getItem("token");
+            await axios.post(
+              `${url}/user/update-profile/${user.id}`,
+              values,
+              token
+                ? { headers: { Authorization: `Bearer ${token}` } }
+                : undefined
+            );
+            toast.success("Profile updated successfully");
           } catch (error) {
-            toast("Profile not updated, try again")
-            console.error("Error during sign up:", error);
+            toast.error("Profile not updated, try again");
+            console.error("Error updating profile:", error);
           } finally {
             setSubmitting(false);
           }
@@ -55,133 +77,140 @@ const Profile = () => {
       >
         {({ isSubmitting }) => (
           <Form className="space-y-6">
-            <div className="flex gap-4">
-              <div className="w-full">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
                 <label
                   htmlFor="firstName"
-                  className="block text-sm font-medium"
+                  className="block text-sm font-medium text-slate-700"
                 >
                   First Name
                 </label>
                 <Field
+                  id="firstName"
                   name="firstName"
                   type="text"
                   placeholder="Enter your first name"
-                  className="mt-1 w-full border border-gray-300 px-3 py-2 rounded-md "
+                  className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-amber-500"
                 />
                 <ErrorMessage
                   name="firstName"
                   component="div"
-                  className="text-red-500 text-sm mt-1"
+                  className="mt-1 text-sm text-red-500"
                 />
               </div>
 
-              <div className="w-full">
-                <label htmlFor="lastName" className="block text-sm font-medium">
+              <div>
+                <label
+                  htmlFor="lastName"
+                  className="block text-sm font-medium text-slate-700"
+                >
                   Last Name
                 </label>
                 <Field
+                  id="lastName"
                   name="lastName"
                   type="text"
                   placeholder="Enter your last name"
-                  className="mt-1 w-full border border-gray-300 px-3 py-2 rounded-md "
+                  className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-amber-500"
                 />
                 <ErrorMessage
                   name="lastName"
                   component="div"
-                  className="text-red-500 text-sm mt-1"
+                  className="mt-1 text-sm text-red-500"
                 />
               </div>
             </div>
-            <div className="flex gap-4">
-              <div className="w-full">
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
                 <label
-                  htmlFor="firstName"
-                  className="block text-sm font-medium"
+                  htmlFor="state"
+                  className="block text-sm font-medium text-slate-700"
                 >
-                  State/Region
+                  State / Region
                 </label>
                 <Field
+                  id="state"
                   name="state"
                   type="text"
-                  placeholder="Country, State, Region.."
-                  className="mt-1 w-full border border-gray-300 px-3 py-2 rounded-md "
+                  placeholder="Country, State, Region…"
+                  className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-amber-500"
                 />
                 <ErrorMessage
                   name="state"
                   component="div"
-                  className="text-red-500 text-sm mt-1"
+                  className="mt-1 text-sm text-red-500"
                 />
               </div>
 
-              <div className="w-full">
-                <label htmlFor="lastName" className="block text-sm font-medium">
+              <div>
+                <label
+                  htmlFor="city"
+                  className="block text-sm font-medium text-slate-700"
+                >
                   City
                 </label>
                 <Field
+                  id="city"
                   name="city"
                   type="text"
                   placeholder="City"
-                  className="mt-1 w-full border border-gray-300 px-3 py-2 rounded-md "
+                  className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-amber-500"
                 />
                 <ErrorMessage
                   name="city"
                   component="div"
-                  className="text-red-500 text-sm mt-1"
+                  className="mt-1 text-sm text-red-500"
                 />
               </div>
             </div>
-            <div className="flex gap-2 items-center text-slate-1000 text-lg">
+
+            <div className="flex items-center gap-2 text-lg text-slate-900">
               <LuBook />
-              <h1>Preferences </h1>
+              <h3 className="font-semibold">Preferences</h3>
             </div>
-            <div className="flex gap-4">
+            <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <label htmlFor="genre" className="block text-sm font-medium">
+                <label
+                  htmlFor="preferredGenre"
+                  className="block text-sm font-medium text-slate-700"
+                >
                   Preferred Genre
                 </label>
                 <select
-                  id="genre"
-                  name="genre"
-                  className="mt-1 p-2 border block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  id="preferredGenre"
+                  name="preferredGenre"
+                  disabled
+                  className="mt-1 block w-full cursor-not-allowed rounded-md border border-gray-300 bg-gray-50 p-2 text-sm shadow-sm"
                 >
-                  <option value="">Select a genre</option>
-                  <option value="fiction">Fiction</option>
-                  <option value="non-fiction">Non-Fiction</option>
-                  <option value="romance">Romance</option>
-                  <option value="sci-fi">Science Fiction</option>
-                  <option value="fantasy">Fantasy</option>
-                  <option value="mystery">Mystery</option>
-                  <option value="history">History</option>
-                  <option value="biography">Biography</option>
-                  <option value="self-help">Self-Help</option>
-                  <option value="children">Children</option>
+                  <option value="">Coming soon</option>
                 </select>
               </div>
 
               <div>
-                <label htmlFor="genre" className="block text-sm font-medium">
+                <label
+                  htmlFor="preferredPrice"
+                  className="block text-sm font-medium text-slate-700"
+                >
                   Preferred Price
                 </label>
                 <select
-                  id="genre"
-                  name="genre"
-                  className="mt-1 p-2 border block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  id="preferredPrice"
+                  name="preferredPrice"
+                  disabled
+                  className="mt-1 block w-full cursor-not-allowed rounded-md border border-gray-300 bg-gray-50 p-2 text-sm shadow-sm"
                 >
-                  <option value="">Select price range</option>
-                  <option value="below-500">{"<500"}</option>
-                  <option value="below-300">{"<300"}</option>
-                  <option value="below-100">{"<100"}</option>
-                  <option value="abpve-500">{">500"}</option>
+                  <option value="">Coming soon</option>
                 </select>
               </div>
             </div>
+
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-amber-600 hover:bg-amber-600 cursor-pointer"
+              className="w-full cursor-pointer bg-amber-600 hover:bg-amber-700 disabled:opacity-70"
             >
-              {isSubmitting ? "Submitting.." : "Submit"}
+              {isSubmitting ? "Saving…" : "Save changes"}
             </Button>
           </Form>
         )}
@@ -190,4 +219,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default ProfileSection;

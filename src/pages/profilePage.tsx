@@ -1,137 +1,159 @@
+import { useCallback, useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { BsPerson } from "react-icons/bs";
-import { FiPackage } from "react-icons/fi";
-import { useEffect, useState } from "react";
+import { FiPackage, FiSettings } from "react-icons/fi";
 import { FaRegHeart } from "react-icons/fa";
 import ProfileSection from "@/components/profile-section";
 import WishlistSection from "@/components/wishlist-section";
 import Orders from "@/components/orders-section";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import spinner from "../assets/spinner.svg";
-import { useCart } from "@/contexts/cartContext";
 
-
-interface userType {
-  id: number;
+interface UserType {
+  id: string;
   email: string;
-  firstName: string;
-  lastName: string;
+  firstName: string | null;
+  lastName: string | null;
   role: string;
+  city?: string | null;
+  state?: string | null;
+}
+
+type Tab = "profile" | "wishlist" | "orders";
+
+const TABS: { id: Tab; label: string; Icon: React.ComponentType<{ className?: string }> }[] = [
+  { id: "profile", label: "Profile", Icon: FiSettings },
+  { id: "wishlist", label: "Wishlist", Icon: FaRegHeart },
+  { id: "orders", label: "Orders", Icon: FiPackage },
+];
+
+function getInitials(first?: string | null, last?: string | null, email?: string) {
+  const f = first?.trim()?.[0];
+  const l = last?.trim()?.[0];
+  if (f && l) return `${f}${l}`.toUpperCase();
+  if (f) return f.toUpperCase();
+  if (email) return email[0].toUpperCase();
+  return "U";
 }
 
 const ProfilePage = () => {
-  const { cartItems } = useCart();
-  console.log("Items in cart", cartItems);
-
   const navigate = useNavigate();
   const url = import.meta.env.VITE_BACKEND_API;
-  const [personClicked, setPersonClicked] = useState(true);
-  const [wishClicked, setWishClicked] = useState(false);
-  const [ordersClicked, setOrdersClicked] = useState(false);
-  const [isActive, setIsActive] = useState("profile");
-  const [user, setUser] = useState<userType | null>(null);
+
+  const [user, setUser] = useState<UserType | null>(null);
   const [loading, setLoading] = useState(true);
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const [active, setActive] = useState<Tab>("profile");
+  const [orderCount, setOrderCount] = useState<number | null>(null);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
       navigate("/signin");
       return;
     }
-    const userID = JSON.parse(atob(token.split(".")[1])).id;
 
+    let userID: string;
+    try {
+      userID = JSON.parse(atob(token.split(".")[1])).id;
+    } catch {
+      navigate("/signin");
+      return;
+    }
+
+    let cancelled = false;
     async function getUserData() {
       try {
-        const response = await axios.get(`${url}/user/${userID}`);
-        console.log(`${url}/user/${userID}`);
+        const response = await axios.get(`${url}/user/${userID}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (cancelled) return;
         setUser(response.data.user);
-        setLoading(false);
-        console.log("User data:", response.data.user);
       } catch (error) {
         console.error("Error fetching user data:", error);
-        setLoading(false);
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     }
     getUserData();
-  }, []);
+    return () => {
+      cancelled = true;
+    };
+  }, [navigate, url]);
+
+  const handleOrdersCount = useCallback((n: number) => setOrderCount(n), []);
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <img src={spinner} alt="Loading..." />
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <img src={spinner} alt="Loading…" className="h-12 w-12" />
       </div>
     );
   }
+
+  const fullName =
+    `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim() ||
+    user?.email ||
+    "Account";
+
   return (
-    <div className="m-8">
-      <div className="flex gap-4">
-        <BsPerson size={50} className="text-slate-700" />
-        <div>
-          <h1 className="text-2xl font-bold">{`${user?.firstName} ${user?.lastName}`}</h1>
-          <span className="text-gray-500">{user?.email}</span>
+    <div className="mx-auto max-w-5xl p-4 md:p-8">
+      <header className="flex items-center gap-4 rounded-xl border bg-white p-4 shadow-sm">
+        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-amber-500 text-xl font-bold text-white">
+          {getInitials(user?.firstName, user?.lastName, user?.email)}
         </div>
-      </div>
+        <div className="min-w-0">
+          <h1 className="truncate text-xl font-bold text-slate-800 md:text-2xl">
+            {fullName}
+          </h1>
+          {user?.email && (
+            <p className="truncate text-sm text-gray-500">{user.email}</p>
+          )}
+        </div>
+      </header>
 
-      <div className="flex flex-col gap-4">
-        {/* buttons */}
-        <div className="mt-8 flex">
-          <div className="flex items-center">
-            <BsPerson className="relative -right-24 text-lg text-slate-800" />
+      <nav
+        aria-label="Profile sections"
+        className="mt-6 flex flex-wrap gap-2 border-b border-gray-200 pb-2"
+      >
+        {TABS.map(({ id, label, Icon }) => {
+          const isActive = active === id;
+          return (
             <button
-              onClick={() => {
-                setPersonClicked(true);
-                setWishClicked(false);
-                setOrdersClicked(false);
-                setIsActive("profile");
-              }}
-              className={`-ml-4 bg-amber-500 px-30 py-1 rounded-lg text-slate-800 text-lg border shadow cursor-pointer ${
-                personClicked && "bg-white"
+              key={id}
+              type="button"
+              onClick={() => setActive(id)}
+              aria-current={isActive ? "page" : undefined}
+              className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                isActive
+                  ? "bg-amber-500 text-white shadow"
+                  : "bg-white text-slate-700 hover:bg-amber-50 hover:text-amber-700 border border-gray-200"
               }`}
             >
-              Profile
+              <Icon className="h-4 w-4" />
+              <span>{label}</span>
+              {id === "orders" && orderCount !== null && (
+                <span
+                  className={`ml-1 rounded-full px-2 py-0.5 text-xs ${
+                    isActive
+                      ? "bg-white/25 text-white"
+                      : "bg-amber-100 text-amber-700"
+                  }`}
+                >
+                  {orderCount}
+                </span>
+              )}
             </button>
-          </div>
+          );
+        })}
+      </nav>
 
-          <div className="flex items-center">
-            <FaRegHeart className="relative -right-28 text-lg text-slate-800" />
-            <button
-              onClick={() => {
-                setWishClicked(true);
-                setOrdersClicked(false);
-                setPersonClicked(false);
-                setIsActive("wishlist");
-              }}
-              className={`bg-amber-500 px-30 py-1 rounded-lg text-slate-800 text-lg border shadow cursor-pointer ${
-                wishClicked && "bg-white"
-              }`}
-            >
-              Wishlist 
-            </button>
-          </div>
+      <section className="mt-6">
+        {active === "profile" && <ProfileSection user={user} />}
+        {active === "wishlist" && <WishlistSection />}
+        {active === "orders" && <Orders onCountChange={handleOrdersCount} />}
+      </section>
 
-          <div className="flex items-center">
-            <FiPackage className="relative -right-28 text-lg text-slate-800" />
-            <button
-              onClick={() => {
-                setOrdersClicked(true);
-                setPersonClicked(false);
-                setWishClicked(false);
-                setIsActive("orders");
-              }}
-              className={`bg-amber-500 px-30 py-1 rounded-lg text-slate-800 text-lg border shadow cursor-pointer ${
-                ordersClicked && "bg-white"
-              }`}
-            >
-              Orders (1)
-            </button>
-          </div>
-        </div>
-        <div className="w-[990px]">
-          {isActive === "profile" && <ProfileSection />}
-          {isActive === "wishlist" && <WishlistSection />}
-          {isActive === "orders" && <Orders />}
-        </div>
-      </div>
+      <BsPerson className="hidden" aria-hidden />
     </div>
   );
 };
