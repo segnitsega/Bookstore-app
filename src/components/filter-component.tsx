@@ -6,11 +6,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Slider } from "@/components/ui/slider";
 import { HiChevronUpDown } from "react-icons/hi2";
-import { LuFilter, LuStar } from "react-icons/lu";
+import { LuFilter, LuStar, LuRotateCcw } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
-import { TbLetterX } from "react-icons/tb";
 import { useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+
+interface FilterProps {
+  /** Called after a successful Apply (e.g. to close the mobile sheet). */
+  onApply?: () => void;
+}
 
 /** URL / API genre (lowercase matches Prisma seed and queries) */
 const GENRES: { label: string; value: string }[] = [
@@ -45,7 +49,7 @@ function genreLabelFromParam(param: string | null): string {
   return found?.label ?? param;
 }
 
-const Filter = () => {
+const Filter = ({ onApply }: FilterProps = {}) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [genreValue, setGenreValue] = useState("");
   const [sortValue, setSortValue] = useState("newest");
@@ -71,6 +75,7 @@ const Filter = () => {
     if (maxPrice < PRICE_SLIDER_MAX) next.set("maxPrice", String(maxPrice));
     if (minRating > 0) next.set("minRating", String(minRating));
     setSearchParams(next);
+    onApply?.();
   };
 
   const resetFilter = () => {
@@ -81,11 +86,29 @@ const Filter = () => {
     setSearchParams({});
   };
 
+  const hasActiveFilters =
+    Boolean(genreValue) ||
+    sortValue !== "newest" ||
+    maxPrice < PRICE_SLIDER_MAX ||
+    minRating > 0;
+
   return (
-    <div className="p-6 h-screen max-w-4xl min-w-[300px] shadow rounded-lg flex flex-col gap-4 border border-gray-200">
-      <div className="flex items-center font-bold gap-2">
-        <LuFilter size={20} />
-        <span className="text-2xl">Filters</span>
+    <div className="flex w-full flex-col gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 font-bold">
+          <LuFilter size={20} />
+          <span className="text-xl">Filters</span>
+        </div>
+        {hasActiveFilters && (
+          <button
+            type="button"
+            onClick={resetFilter}
+            className="inline-flex items-center gap-1 text-xs font-medium text-amber-700 hover:text-amber-800"
+          >
+            <LuRotateCcw className="h-3.5 w-3.5" />
+            Reset
+          </button>
+        )}
       </div>
 
       <div className="flex flex-col gap-2">
@@ -199,17 +222,22 @@ const Filter = () => {
         </div>
       </div>
 
-      <div>
+      <div className="flex flex-col gap-2 pt-2">
         <Button
-          className="absolute bg-white text-black border border-gray-300 w-[15rem] hover:bg-gray-100 cursor-pointer hover:border-blue-500 shadow"
-          onClick={resetFilter}
+          type="button"
+          className="h-10 w-full cursor-pointer bg-amber-500 font-semibold text-white hover:bg-amber-600"
+          onClick={applyFilter}
         >
-          Reset Filter
+          Apply Filters
         </Button>
-        <TbLetterX className="relative top-2.5 -right-15 " />
-
-        <Button className="mt-8 w-[15rem]" onClick={applyFilter}>
-          Apply Filter
+        <Button
+          type="button"
+          variant="outline"
+          className="h-10 w-full cursor-pointer"
+          onClick={resetFilter}
+          disabled={!hasActiveFilters}
+        >
+          Reset
         </Button>
       </div>
     </div>

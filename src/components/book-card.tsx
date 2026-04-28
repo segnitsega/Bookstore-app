@@ -1,11 +1,12 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
+import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { CiHeart } from "react-icons/ci";
 import { FaStar, FaHeart } from "react-icons/fa";
-import { Link } from "react-router-dom";
-import { toast } from "sonner";
-import { useEffect, useState } from "react";
+import { LuShoppingCart } from "react-icons/lu";
 import { useCart } from "@/contexts/cartContext";
-import axios from "axios";
 
 interface bookCardProp {
   bookTitle: string;
@@ -13,10 +14,41 @@ interface bookCardProp {
   bookAuthor: string;
   bookRating: number;
   bookPrice: number;
-  discountedPrice: number;
+  /** Optional original ("compare at") price; ignored if not greater than bookPrice. */
+  discountedPrice?: number;
   bookId: string;
   wishlistReload?: () => void;
 }
+
+const url = import.meta.env.VITE_BACKEND_API;
+
+const money = (n: number) =>
+  n.toLocaleString("en-US", { style: "currency", currency: "USD" });
+
+function getUserIdFromToken(): string {
+  const token = localStorage.getItem("token");
+  if (!token) return "";
+  try {
+    return JSON.parse(atob(token.split(".")[1])).id ?? "";
+  } catch {
+    return "";
+  }
+}
+
+const Stars = ({ rating }: { rating: number }) => {
+  const rounded = Math.round(rating);
+  return (
+    <div className="flex items-center gap-0.5" aria-label={`Rated ${rating} out of 5`}>
+      {Array.from({ length: 5 }, (_, i) => (
+        <FaStar
+          key={i}
+          size={14}
+          className={i < rounded ? "text-amber-400" : "text-gray-300"}
+        />
+      ))}
+    </div>
+  );
+};
 
 const BookCard = ({
   bookTitle,
@@ -28,153 +60,172 @@ const BookCard = ({
   bookId,
   wishlistReload,
 }: bookCardProp) => {
+  const { cartItems, setReloadCartItems } = useCart();
   const [reloadWishlist, setReloadWishlist] = useState(false);
+  const [wishlist, setWishlist] = useState<Array<{ bookId: string }>>([]);
+  const [cartBusy, setCartBusy] = useState(false);
+  const [wishlistBusy, setWishlistBusy] = useState(false);
 
-  const url = import.meta.env.VITE_BACKEND_API;
+  const userId = getUserIdFromToken();
+  const inCart = cartItems.some((i) => i.bookId === bookId);
+  const inWishlist = wishlist.some((item) => item.bookId === bookId);
+  const showCompareAt =
+    typeof discountedPrice === "number" && discountedPrice > bookPrice;
 
-  async function handleAddToCart(bookId: string) {
-    console.log("Add to cart ran.");
+  useEffect(() => {
+    if (!userId) return;
+    let cancelled = false;
+    async function getWishlist() {
+      try {
+        const res = await axios.get(`${url}/user/wishlist/${userId}`);
+        if (!cancelled) setWishlist(res.data.wishlistBooks ?? []);
+      } catch {
+        // silent — wishlist is best-effort
+      }
+    }
+    getWishlist();
+    return () => {
+      cancelled = true;
+    };
+  }, [userId, reloadWishlist]);
+
+  async function handleAddToCart() {
+    if (!localStorage.getItem("token")) {
+      toast.error("Please sign in to add books to your cart");
+      return;
+    }
+    if (inCart || cartBusy) return;
     try {
+      setCartBusy(true);
       const response = await axios.post(
         `${url}/cart/add`,
         { bookId },
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
       if (response.status === 201) {
-        toast("✅ Book added to cart");
-        setReloadCartItems(prev => !prev)
+        toast.success("Added to cart");
+        setReloadCartItems((prev) => !prev);
       }
-    } catch (err: any) {
-      if (err.response.status === 400) {
-        toast("❌ The book is already in cart, add another book");
+    } catch (err: unknown) {
+      const status =
+        err && typeof err === "object" && "response" in err
+          ? (err as { response?: { status?: number } }).response?.status
+          : undefined;
+      if (status === 400) {
+        toast.message("Already in your cart");
       } else {
-        toast("❌ Book not added to cart, try again");
+        toast.error("Could not add to cart, please try again");
       }
+    } finally {
+      setCartBusy(false);
     }
   }
 
-  async function addToWishlist(bookId: string) {
+  async function toggleWishlist() {
+    if (!localStorage.getItem("token")) {
+      toast.error("Please sign in to use the wishlist");
+      return;
+    }
+    if (wishlistBusy) return;
     try {
-      const added = await axios.post(
-        `${url}/books/wishlist/${bookId}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      if (added) {
-        toast("Book added to wishlist");
-        setReloadWishlist(!reloadWishlist);
+      setWishlistBusy(true);
+      if (inWishlist) {
+        await axios.delete(`${url}/books/wishlist/${bookId}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        toast.success("Removed from wishlist");
+        wishlistReload?.();
+      } else {
+        await axios.post(
+          `${url}/books/wishlist/${bookId}`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        toast.success("Added to wishlist");
       }
-    } catch (e) {
-      toast("Book not added, try again");
-      console.log(e);
+      setReloadWishlist((p) => !p);
+    } catch {
+      toast.error("Could not update wishlist, please try again");
+    } finally {
+      setWishlistBusy(false);
     }
   }
-
-  async function removeFromWishlist(bookId: string) {
-    try {
-      const removed = await axios.delete(`${url}/books/wishlist/${bookId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      if (removed) {
-        if (wishlistReload) wishlistReload();
-        toast("Book removed from wishlist");
-        setReloadWishlist(!reloadWishlist);
-      }
-    } catch (e) {
-      toast("Book not removed, try again");
-      console.log(e);
-    }
-  }
-
-  const token = localStorage.getItem("token") as string;
-  let userId = ""
-  if (token){
-    userId = JSON.parse(atob(token.split(".")[1])).id;
-
-  } else{
-    console.log("no token")
-  }
-  
-  const { cartItems, setReloadCartItems } = useCart();
-  const [wishlist, setWishlist] = useState([]);
-
-  useEffect(() => {
-    async function getWishlist() {
-      const wishlist = await axios.get(`${url}/user/wishlist/${userId}`);
-      if (wishlist) setWishlist(wishlist.data.wishlistBooks);
-    }
-    getWishlist();
-  }, [reloadWishlist]);
 
   return (
-    <div className=" max-sm:w-[300px] relative border border-gray-200 rounded-xl flex flex-col overflow-hidden cursor-pointer hover:shadow-lg hover:shadow-blue-100">
-      <Link to={`/books/${bookId}`}>
+    <article className="group relative flex w-full flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-amber-200 hover:shadow-lg">
+      <Link
+        to={`/books/${bookId}`}
+        className="relative block aspect-[3/4] w-full overflow-hidden bg-gray-100"
+      >
         <img
           src={bookUrl}
-          alt="Book image"
-          className=" md:h-[400px]  max-sm:w-[300px] sm:w-[600px] rounded-lg duration-1000 hover:scale-105 cursor-pointer"
+          alt={bookTitle}
+          loading="lazy"
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
       </Link>
-      {wishlist.find((item: any) => item.bookId === bookId) ? (
-        <FaHeart
-          onClick={() => removeFromWishlist(bookId)}
-          className="absolute top-2 right-2 bg-white/40 p-2 rounded-2xl text-red-500 "
-          size={40}
-        />
-      ) : (
-        <CiHeart
-          onClick={() => addToWishlist(bookId)}
-          className="absolute top-2 right-2 bg-white/40 p-2 rounded-2xl text-red-500 "
-          size={40}
-        />
-      )}
 
-      <div className="p-2 flex flex-col gap-2">
-        <Link to={`/books/${bookId}`} className="text-blue-500 font-bold">
+      <button
+        type="button"
+        onClick={toggleWishlist}
+        aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
+        aria-pressed={inWishlist}
+        disabled={wishlistBusy}
+        className="absolute right-2 top-2 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/85 text-red-500 shadow-sm backdrop-blur transition-colors hover:bg-white hover:text-red-600 disabled:opacity-60"
+      >
+        {inWishlist ? (
+          <FaHeart className="h-4 w-4" />
+        ) : (
+          <CiHeart className="h-5 w-5" />
+        )}
+      </button>
+
+      <div className="flex flex-1 flex-col gap-2 p-3">
+        <Link
+          to={`/books/${bookId}`}
+          className="line-clamp-2 text-base font-semibold capitalize text-slate-800 hover:text-amber-600"
+          title={bookTitle}
+        >
           {bookTitle}
         </Link>
-        <Link to={`/books/${bookId}`} className="text-gray-500">
-          {bookAuthor}
-        </Link>
-        <Link to={`/books/${bookId}`} className="flex">
-          {[...Array(5)].map((_, index) => (
-            <FaStar
-              key={index}
-              size={0}
-              className={
-                index < bookRating ? "text-yellow-500" : "text-gray-300"
-              }
-            />
-          ))}
-        </Link>
-        <div className="flex justify-between">
-          <Link to={`/books/${bookId}`} className="text-amber-600 font-bold">
-            ${bookPrice}{" "} 
-            <span className="line-through text-gray-500">
-              ${discountedPrice}
+        <p className="line-clamp-1 text-sm text-gray-500 capitalize">{bookAuthor}</p>
+        <Stars rating={bookRating} />
+
+        <div className="mt-auto flex items-center justify-between gap-2 pt-2">
+          <div className="flex items-baseline gap-2">
+            <span className="text-base font-bold text-amber-600 tabular-nums">
+              {money(bookPrice)}
             </span>
-          </Link>
+            {showCompareAt && (
+              <span className="text-xs text-gray-400 line-through tabular-nums">
+                {money(discountedPrice!)}
+              </span>
+            )}
+          </div>
+
           <Button
-            onClick={() => handleAddToCart(bookId)}
-            className="bg-white text-gray-500 border border-amber-200 hover:bg-gray-100 hover:text-gray-800 cursor-pointer"
+            type="button"
+            size="sm"
+            onClick={handleAddToCart}
+            disabled={cartBusy || inCart}
+            className={`h-9 cursor-pointer ${
+              inCart
+                ? "bg-emerald-50 text-emerald-700 hover:bg-emerald-50"
+                : "bg-amber-500 text-white hover:bg-amber-600"
+            } disabled:cursor-not-allowed disabled:opacity-90`}
           >
-            {cartItems.find((i) => i.bookId === bookId)
-              ? "In Cart"
-              : "Add to Cart"}
+            <LuShoppingCart className="mr-1 h-4 w-4" />
+            {inCart ? "In Cart" : cartBusy ? "Adding…" : "Add"}
           </Button>
         </div>
       </div>
-    </div>
+    </article>
   );
 };
 

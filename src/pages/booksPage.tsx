@@ -1,12 +1,13 @@
-import { Button } from "@/components/ui/button";
-import { CiSearch } from "react-icons/ci";
-import Filter from "@/components/filter-component";
-import BookCard from "@/components/book-card";
-import type { bookType } from "@/components/best-sellers";
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
-import spinner from "../assets/spinner.svg";
 import { useSearchParams } from "react-router-dom";
+import { CiSearch } from "react-icons/ci";
+import { LuFilter, LuX } from "react-icons/lu";
+import Filter from "@/components/filter-component";
+import BookCard from "@/components/book-card";
+import { Button } from "@/components/ui/button";
+import type { bookType } from "@/components/best-sellers";
+import spinner from "../assets/spinner.svg";
 
 function applyClientSort(books: bookType[], sort: string | null): bookType[] {
   const copy = [...books];
@@ -52,46 +53,24 @@ function buildBooksListQuery(
   return `/books/?${params.toString()}`;
 }
 
+const PAGE_LIMIT = 12;
+
 const BooksPage = () => {
   const [searchParams] = useSearchParams();
-
-  const [query, setQuery] = useState("");
-  const [, setResults] = useState<bookType[]>([]);
-  const [searchLoading, setSearchLoading] = useState(false);
-  const [searchError, setSearchError] = useState(false);
-
   const url = import.meta.env.VITE_BACKEND_API;
+
   const [books, setBooks] = useState<bookType[] | null>(null);
   const [totalBooks, setTotalBooks] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const limit = 8;
-  const fetchBooks = async (q: string) => {
-    try {
-      setSearchError(false);
-      setSearchLoading(true);
-      const res = await axios.get(`${url}/search?q=${encodeURIComponent(q)}`);
-      if (res.status === 200) {
-        setResults(res.data.books);
-        setSearchLoading(false);
-      } else {
-        setSearchError(true);
-        setSearchLoading(false);
-      }
-    } catch {
-      setSearchError(true);
-      setSearchLoading(false);
-    }
-  };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setQuery(value);
-    setSearchError(false);
-    if (value === "") {
-      setResults([]);
-    }
-  };
+  const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<bookType[] | null>(null);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+
+  const [showMobileFilter, setShowMobileFilter] = useState(false);
 
   useEffect(() => {
     async function getBooks() {
@@ -99,7 +78,7 @@ const BooksPage = () => {
       try {
         setError(null);
         setLoading(true);
-        const endPoint = buildBooksListQuery(searchParams, limit);
+        const endPoint = buildBooksListQuery(searchParams, PAGE_LIMIT);
         const response = await axios.get(`${url}${endPoint}`);
         const raw: bookType[] = response.data.books ?? [];
         const sortParam = searchParams.get("sort");
@@ -110,7 +89,6 @@ const BooksPage = () => {
             ? response.data.totalBooks
             : sorted.length
         );
-        setLoading(false);
       } catch (err: unknown) {
         const status =
           err && typeof err === "object" && "response" in err
@@ -119,90 +97,188 @@ const BooksPage = () => {
         if (status === 400) {
           setBooks([]);
           setTotalBooks(0);
-          setError("No books found for the selected filters.");
+          setError("No books match these filters.");
         } else {
           setError("Something went wrong. Please try again.");
         }
+      } finally {
         setLoading(false);
       }
     }
     getBooks();
-  }, [searchParams, url, limit]);
+  }, [searchParams, url]);
+
+  // Debounce search input → searchResults
+  useEffect(() => {
+    const id = setTimeout(() => setDebouncedQuery(query.trim()), 300);
+    return () => clearTimeout(id);
+  }, [query]);
+
+  useEffect(() => {
+    if (!debouncedQuery) {
+      setSearchResults(null);
+      setSearchError(null);
+      setSearchLoading(false);
+      return;
+    }
+    let cancelled = false;
+    async function fetchResults() {
+      try {
+        setSearchLoading(true);
+        setSearchError(null);
+        const res = await axios.get(
+          `${url}/search?q=${encodeURIComponent(debouncedQuery)}`
+        );
+        if (cancelled) return;
+        setSearchResults(res.data.books ?? []);
+      } catch {
+        if (cancelled) return;
+        setSearchResults([]);
+        setSearchError(`No results for "${debouncedQuery}"`);
+      } finally {
+        if (!cancelled) setSearchLoading(false);
+      }
+    }
+    fetchResults();
+    return () => {
+      cancelled = true;
+    };
+  }, [debouncedQuery, url]);
+
+  const isSearching = debouncedQuery.length > 0;
+  const list = isSearching ? searchResults : books;
+  const isLoading = isSearching ? searchLoading : loading;
+  const errMessage = isSearching ? searchError : error;
 
   const showingLabel = useMemo(() => {
-    if (!books || loading) return null;
-    const n = books.length;
-    const total = totalBooks;
-    if (n === 0) return "No books match these filters";
-    return `Showing 1–${n} of ${total} book${total === 1 ? "" : "s"}`;
-  }, [books, loading, totalBooks]);
+    if (isLoading) return "Loading…";
+    if (isSearching) {
+      if (!searchResults) return null;
+      return `${searchResults.length} result${
+        searchResults.length === 1 ? "" : "s"
+      } for "${debouncedQuery}"`;
+    }
+    if (!books) return null;
+    if (books.length === 0) return "No books match these filters";
+    return `Showing 1–${books.length} of ${totalBooks} book${
+      totalBooks === 1 ? "" : "s"
+    }`;
+  }, [
+    isLoading,
+    isSearching,
+    searchResults,
+    debouncedQuery,
+    books,
+    totalBooks,
+  ]);
 
   return (
-    <div className="overflow-x-hidden p-2 md:p-8">
-      <h1 className="text-amber-900 text-2xl font-bold md:text-4xl">
-        Browse Books
-      </h1>
-      <div className="flex flex-col md:flex-row md:justify-between md:items-center my-2 md:my-4">
-        <span className="text-gray-500">
-          {showingLabel ?? "Loading books…"}
+    <div className="mx-auto max-w-7xl px-4 py-6 md:px-8 md:py-10">
+      <header className="flex flex-col gap-2">
+        <h1 className="text-3xl font-bold text-amber-900 md:text-4xl">
+          Browse Books
+        </h1>
+        <p className="text-sm text-gray-500">
+          Discover your next favorite read.
+        </p>
+      </header>
+
+      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <span className="text-sm text-gray-500">
+          {showingLabel ?? "\u00A0"}
         </span>
-        <div className="flex flex-col md:flex-row md:items-center gap-2">
-          <div className="flex items-center py-1 px-1 md:px-2 border-1 border-orange-300 shadow gap-2 rounded-md w-[250px] md:w-[300px]">
-            <CiSearch className="text-gray-500 w-10 md:h-5 md:w-5" />
-            <input
-              type="text"
-              value={query}
-              onChange={handleChange}
-              placeholder="Search books, authors..."
-              className="outline-none w-[400px]"
-            />
-          </div>
+
+        <div className="flex items-center gap-2">
           <Button
-            disabled={searchLoading}
-            className="hidden md:block bg-amber-500 hover:bg-amber-400 cursor-pointer"
-            onClick={() => fetchBooks(query)}
+            type="button"
+            variant="outline"
+            onClick={() => setShowMobileFilter((v) => !v)}
+            className="lg:hidden"
+            aria-expanded={showMobileFilter}
           >
-            {searchLoading ? "Searching.." : "Search"}
+            <LuFilter className="mr-1.5 h-4 w-4" />
+            Filters
           </Button>
+
+          <form
+            role="search"
+            onSubmit={(e) => {
+              e.preventDefault();
+              setDebouncedQuery(query.trim());
+            }}
+            className="flex w-full min-w-[260px] items-center gap-2 rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus-within:border-amber-400 sm:w-[340px]"
+          >
+            <CiSearch className="h-5 w-5 shrink-0 text-gray-500" />
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search books, authors, genre…"
+              aria-label="Search books"
+              className="w-full bg-transparent text-sm outline-none placeholder:text-gray-400"
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery("")}
+                aria-label="Clear search"
+                className="inline-flex h-6 w-6 items-center justify-center rounded text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+              >
+                <LuX className="h-4 w-4" />
+              </button>
+            )}
+          </form>
         </div>
       </div>
-      {searchError && (
-        <div className="-mt-4 flex justify-end mr-60 text-red-500">
-          {query
-            ? `Book: ${query} not found`
-            : "Enter book name or author to search for books"}
+
+      {showMobileFilter && (
+        <div className="mt-4 lg:hidden">
+          <Filter onApply={() => setShowMobileFilter(false)} />
         </div>
       )}
 
-      <div className="flex gap-4">
-        <div className="hidden md:block">
+      <div className="mt-4 flex gap-6">
+        <aside className="hidden w-[300px] shrink-0 lg:block">
           <Filter />
-        </div>
+        </aside>
 
-        {loading && (
-          <img src={spinner} alt="Loading..." className="w-20 h-20 mx-auto " />
-        )}
-        {error ? (
-          <div className="mx-auto bg-red-100 text-red-800 px-4 py-2 rounded-md text-sm">
-            ⚠️ {error}
-          </div>
-        ) : (
-          ""
-        )}
-        <div className="grid grid-cols-1 sm:grid-cols-4 grid-row-2 gap-4">
-          {books &&
-            books.map((book: bookType, index) => (
-              <BookCard
-                key={index}
-                bookId={book.id}
-                bookTitle={book.title}
-                bookUrl={book.imageUrl}
-                bookAuthor={book.author}
-                bookRating={book.bookRating}
-                bookPrice={book.price}
-                discountedPrice={book.price * 2}
-              />
-            ))}
+        <div className="min-w-0 flex-1">
+          {isLoading ? (
+            <div className="flex justify-center py-20">
+              <img src={spinner} alt="Loading…" className="h-16 w-16" />
+            </div>
+          ) : errMessage ? (
+            <div className="mx-auto max-w-md rounded-lg border border-amber-200 bg-amber-50 px-4 py-6 text-center">
+              <p className="text-amber-800">{errMessage}</p>
+              {isSearching && (
+                <button
+                  type="button"
+                  onClick={() => setQuery("")}
+                  className="mt-3 text-sm font-medium text-amber-700 underline-offset-4 hover:underline"
+                >
+                  Clear search
+                </button>
+              )}
+            </div>
+          ) : !list || list.length === 0 ? (
+            <div className="mx-auto max-w-md rounded-lg border border-dashed border-gray-200 px-4 py-10 text-center text-gray-500">
+              No books to show.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {list.map((book) => (
+                <BookCard
+                  key={book.id}
+                  bookId={book.id}
+                  bookTitle={book.title}
+                  bookUrl={book.imageUrl}
+                  bookAuthor={book.author}
+                  bookRating={book.bookRating}
+                  bookPrice={book.price}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
