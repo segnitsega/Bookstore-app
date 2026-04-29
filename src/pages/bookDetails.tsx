@@ -1,86 +1,184 @@
-import { Button } from "@/components/ui/button";
-import { FaArrowLeft } from "react-icons/fa6";
-import { FaStar, FaHeart } from "react-icons/fa";
-import { SlCalender } from "react-icons/sl";
-import { CiShoppingCart } from "react-icons/ci";
-import type { bookType } from "@/components/best-sellers";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { useParams } from "react-router-dom";
-import BookCard from "@/components/book-card";
 import { toast } from "sonner";
-import { useCart } from "@/contexts/cartContext";
+import { FaArrowLeft, FaStar, FaHeart } from "react-icons/fa";
 import { CiHeart } from "react-icons/ci";
+import { LuShoppingCart, LuCalendar } from "react-icons/lu";
+import { Button } from "@/components/ui/button";
+import BookCard from "@/components/book-card";
+import type { bookType } from "@/components/best-sellers";
+import { useCart } from "@/contexts/cartContext";
+import spinner from "../assets/spinner.svg";
+
+const url = import.meta.env.VITE_BACKEND_API;
+
+const money = (n: number) =>
+  n.toLocaleString("en-US", { style: "currency", currency: "USD" });
+
+function getUserIdFromToken(): string {
+  const token = localStorage.getItem("token");
+  if (!token) return "";
+  try {
+    return JSON.parse(atob(token.split(".")[1])).id ?? "";
+  } catch {
+    return "";
+  }
+}
+
+const formatDate = (raw?: string | null) => {
+  if (!raw) return "—";
+  const d = new Date(raw);
+  if (Number.isNaN(d.getTime())) return raw;
+  return d.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+  });
+};
+
+const Stars = ({ rating }: { rating: number }) => {
+  const rounded = Math.round(rating);
+  return (
+    <div
+      className="flex items-center gap-0.5"
+      aria-label={`Rated ${rating} out of 5`}
+    >
+      {Array.from({ length: 5 }, (_, i) => (
+        <FaStar
+          key={i}
+          size={16}
+          className={i < rounded ? "text-amber-400" : "text-gray-300"}
+        />
+      ))}
+    </div>
+  );
+};
+
+const StatRow = ({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) => (
+  <div className="flex items-center justify-between gap-4 py-2">
+    <span className="text-sm text-gray-500">{label}</span>
+    <span className="text-right text-sm font-medium text-slate-800">
+      {children}
+    </span>
+  </div>
+);
 
 const BookDetails = () => {
   const { id } = useParams();
-  const url = import.meta.env.VITE_BACKEND_API;
+  const navigate = useNavigate();
+
   const [book, setBook] = useState<bookType | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | Error | unknown | null>(null);
-  const [bookByGenre, setBookByGenre] = useState<bookType[] | null>(null);
-  const [loadingByGenre, setLoadingByGenre] = useState(true);
-  const [errorByGenre, setErrorByGenre] = useState<
-    string | Error | unknown | null
-  >(null);
-  const { cartItems, setReloadCartItems } = useCart();
+  const [error, setError] = useState<string | null>(null);
+
+  const [related, setRelated] = useState<bookType[] | null>(null);
+  const [relatedLoading, setRelatedLoading] = useState(true);
+
+  const [wishlist, setWishlist] = useState<Array<{ bookId: string }>>([]);
   const [reloadWishlist, setReloadWishlist] = useState(false);
-  const [wishlist, setWishlist] = useState([]);
+  const [wishlistBusy, setWishlistBusy] = useState(false);
+  const [cartBusy, setCartBusy] = useState(false);
 
-  console.log(loading, error, loadingByGenre, errorByGenre);
-  const token = localStorage.getItem("token") as string;
-  let userId = "";
-  if (token) {
-    userId = JSON.parse(atob(token.split(".")[1])).id;
-  } else {
-    console.log("no token");
-  }
+  const { cartItems, setReloadCartItems } = useCart();
+  const userId = useMemo(() => getUserIdFromToken(), []);
 
+  const inCart = useMemo(
+    () => cartItems.some((i) => i.bookId === book?.id),
+    [cartItems, book?.id]
+  );
+  const inWishlist = useMemo(
+    () => wishlist.some((w) => w.bookId === book?.id),
+    [wishlist, book?.id]
+  );
+
+  // Fetch the book
   useEffect(() => {
-    async function getWishlist() {
-      const wishlist = await axios.get(`${url}/user/wishlist/${userId}`);
-      if (wishlist) setWishlist(wishlist.data.wishlistBooks);
-    }
-    getWishlist();
-  }, [reloadWishlist]);
-
-  useEffect(() => {
+    if (!id) return;
+    let cancelled = false;
     async function getBook() {
       try {
-        const response = await axios(`${url}/books/${id}`);
-        setBook(response.data.book);
-        setLoading(false);
-      } catch (e) {
-        setError(e);
-        setLoading(false);
+        setLoading(true);
+        setError(null);
+        const response = await axios.get(`${url}/books/${id}`);
+        if (cancelled) return;
+        setBook(response.data.book ?? null);
+      } catch (e: unknown) {
+        if (cancelled) return;
+        const message =
+          e instanceof Error ? e.message : "Could not load this book";
+        setError(message);
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     }
     getBook();
-  }, []);
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
 
+  // Related books (by genre)
   useEffect(() => {
-    async function getBookByGenre(genre: string) {
+    if (!book?.genre) return;
+    let cancelled = false;
+    async function getRelated() {
       try {
-        const response = await axios(`${url}/books/genre/${genre}/?limit=4`);
-        setBookByGenre(response.data.books);
-        setLoadingByGenre(false);
-      } catch (e) {
-        setErrorByGenre(e);
-        setLoadingByGenre(false);
+        setRelatedLoading(true);
+        const response = await axios.get(
+          `${url}/books/genre/${encodeURIComponent(book!.genre)}/?limit=8`
+        );
+        if (cancelled) return;
+        const list: bookType[] = response.data.books ?? [];
+        setRelated(list.filter((b) => b.id !== book!.id).slice(0, 4));
+      } catch {
+        if (!cancelled) setRelated([]);
+      } finally {
+        if (!cancelled) setRelatedLoading(false);
       }
     }
-    if (book) {
-      getBookByGenre(book.genre);
-    }
+    getRelated();
+    return () => {
+      cancelled = true;
+    };
   }, [book]);
 
-  async function handleAddToCart(bookId: any) {
-    console.log("Add to cart ran.");
-    // const response = await addToCart(bookId);
+  // Wishlist
+  useEffect(() => {
+    if (!userId) return;
+    let cancelled = false;
+    async function getWishlist() {
+      try {
+        const res = await axios.get(`${url}/user/wishlist/${userId}`);
+        if (!cancelled) setWishlist(res.data.wishlistBooks ?? []);
+      } catch {
+        // best-effort
+      }
+    }
+    getWishlist();
+    return () => {
+      cancelled = true;
+    };
+  }, [userId, reloadWishlist]);
+
+  async function handleAddToCart() {
+    if (!book) return;
+    if (!localStorage.getItem("token")) {
+      toast.error("Please sign in to add books to your cart");
+      return;
+    }
+    if (inCart || cartBusy) return;
     try {
+      setCartBusy(true);
       const response = await axios.post(
         `${url}/cart/add`,
-        { bookId },
+        { bookId: book.id },
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -88,176 +186,265 @@ const BookDetails = () => {
         }
       );
       if (response.status === 201) {
-        toast("✅ Book added to cart");
-        setReloadCartItems((prev) => !prev);
+        toast.success("Added to cart");
+        setReloadCartItems((p) => !p);
       }
-    } catch (err: any) {
-      if (err.response.status === 400) {
-        toast("❌ The book is already in cart, add another book");
-      } else {
-        toast("❌ Book not added to cart, try again");
-      }
+    } catch (err: unknown) {
+      const status =
+        err && typeof err === "object" && "response" in err
+          ? (err as { response?: { status?: number } }).response?.status
+          : undefined;
+      if (status === 400) toast.message("Already in your cart");
+      else toast.error("Could not add to cart, please try again");
+    } finally {
+      setCartBusy(false);
     }
   }
 
-  async function addToWishlist(bookId: any) {
+  async function toggleWishlist() {
+    if (!book) return;
+    if (!localStorage.getItem("token")) {
+      toast.error("Please sign in to use the wishlist");
+      return;
+    }
+    if (wishlistBusy) return;
     try {
-      const added = await axios.post(
-        `${url}/books/wishlist/${bookId}`,
-        {},
-        {
+      setWishlistBusy(true);
+      if (inWishlist) {
+        await axios.delete(`${url}/books/wishlist/${book.id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-        }
-      );
-      if (added) {
-        toast("Book added to wishlist");
-        setReloadWishlist(!reloadWishlist);
+        });
+        toast.success("Removed from wishlist");
+      } else {
+        await axios.post(
+          `${url}/books/wishlist/${book.id}`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        toast.success("Added to wishlist");
       }
-    } catch (e) {
-      toast("Book not added, try again");
-      console.log(e);
+      setReloadWishlist((p) => !p);
+    } catch {
+      toast.error("Could not update wishlist, please try again");
+    } finally {
+      setWishlistBusy(false);
     }
   }
 
-  async function removeFromWishlist(bookId: any) {
-    try {
-      const removed = await axios.delete(`${url}/books/wishlist/${bookId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      if (removed) {
-        // if (wishlistReload) wishlistReload();
-        toast("Book removed from wishlist");
-        setReloadWishlist(!reloadWishlist);
-      }
-    } catch (e) {
-      toast("Book not removed, try again");
-      console.log(e);
-    }
+  if (loading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <img src={spinner} alt="Loading…" className="h-16 w-16" />
+      </div>
+    );
   }
+
+  if (error || !book) {
+    return (
+      <div className="mx-auto max-w-md p-8 text-center">
+        <h1 className="text-xl font-semibold text-slate-800">
+          {error ?? "Book not found"}
+        </h1>
+        <Button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="mt-4 bg-amber-500 hover:bg-amber-600"
+        >
+          <FaArrowLeft className="mr-2 h-3.5 w-3.5" />
+          Go back
+        </Button>
+      </div>
+    );
+  }
+
+  const stockBadge =
+    book.stock <= 0
+      ? { text: "Out of stock", cls: "bg-red-50 text-red-700" }
+      : book.stock < 5
+        ? {
+            text: `Only ${book.stock} left`,
+            cls: "bg-amber-50 text-amber-700",
+          }
+        : { text: "In stock", cls: "bg-emerald-50 text-emerald-700" };
 
   return (
-    <div className="m-8">
-      <Button className=" bg-amber-500 cursor-pointer w-20 border hover:border-blue-500 hover:bg-amber-600">
+    <div className="mx-auto max-w-6xl px-4 py-6 md:px-8 md:py-10">
+      <Button
+        type="button"
+        variant="outline"
+        onClick={() => navigate(-1)}
+        className="mb-6 w-fit border-amber-300 text-amber-700 hover:bg-amber-50 hover:text-amber-800"
+      >
+        <FaArrowLeft className="mr-2 h-3.5 w-3.5" aria-hidden />
         Back
       </Button>
-      <FaArrowLeft className="relative -top-7 left-1 text-white" />
 
-      <div className="flex w-full gap-10">
-        <img src={book?.imageUrl} alt="" className="w-xl rounded-lg shadow" />
+      <section className="grid gap-8 md:grid-cols-[minmax(0,420px)_1fr] md:items-start">
+        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-gray-50 shadow-sm">
+          <img
+            src={book.imageUrl}
+            alt={book.title}
+            className="aspect-[3/4] w-full object-cover"
+            loading="lazy"
+          />
+        </div>
+
         <div className="flex flex-col gap-4">
-          <h1 className="text-slate-800 font-bold text-3xl">{book?.title}</h1>
-          <span className="text-amber-600 text-xl">{book?.author}</span>
-          <div className="flex">
-            {[...Array(5)].map((_, index) => (
-              <FaStar
-                key={index}
-                size={0}
-                className={
-                  index < (book?.bookRating as number)
-                    ? "text-yellow-500"
-                    : "text-gray-300"
-                }
-              />
-            ))}
-            <p>
-              <span className="text-gray-500">({book?.reviews} reviews)</span>
+          <div className="flex flex-wrap items-center gap-2">
+            {book.genre && (
+              <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium uppercase tracking-wide text-amber-700">
+                {book.genre}
+              </span>
+            )}
+            <span
+              className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${stockBadge.cls}`}
+            >
+              {stockBadge.text}
+            </span>
+          </div>
+
+          <h1 className="text-2xl font-bold capitalize text-slate-900 md:text-3xl">
+            {book.title}
+          </h1>
+          <p className="text-lg capitalize text-amber-700">by {book.author}</p>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <Stars rating={book.bookRating} />
+            <span className="text-sm text-gray-500">
+              {book.bookRating?.toFixed(1)} · {book.reviews ?? 0} review
+              {book.reviews === 1 ? "" : "s"}
+            </span>
+          </div>
+
+          <div className="flex items-baseline gap-2">
+            <span className="text-3xl font-bold tabular-nums text-amber-600">
+              {money(book.price)}
+            </span>
+          </div>
+
+          <div>
+            <h2 className="text-base font-semibold text-slate-800">
+              Description
+            </h2>
+            <p className="mt-1 text-sm leading-relaxed text-gray-600">
+              {book.description || "No description available."}
             </p>
           </div>
-          <span className="text-amber-600 text-2xl font-bold">$16.99</span>
-          <h1 className="text-slate-800 font-bold text-xl">Description</h1>
-          <p className="text-gray-500">{book?.description}</p>
 
-          <div className="flex flex-col gap-2 p-4 border border-gray-200 rounded-lg shadow mt-4">
-            <div className="flex justify-between">
-              <h1 className="text-gray-500 text-lg">Genre</h1>
-              <p className="bg-gray-300 rounded-md p-1 text-slate-1000">
-                {book?.genre}
-              </p>
-            </div>
-            <div className="flex justify-between">
-              <h1 className="text-gray-500 text-lg">Pages</h1>
-              <div className="flex items-center gap-1">
-                <p>{book?.pages}</p>
-              </div>
-            </div>
-            <div className="flex justify-between">
-              <h1 className="text-gray-500 text-lg">Published</h1>
-              <div className="flex items-center gap-1">
-                <SlCalender />
-                <p>{book?.publishedDate}</p>
-              </div>
-            </div>
-            <div className="flex justify-between">
-              <h1 className="text-gray-500 text-lg">Publisher</h1>
-              <p> {book?.publisher}</p>
-            </div>
-            <div className="flex justify-between">
-              <h1 className="text-gray-500 text-lg">ISBN</h1>
-              <p>{book?.isbn}</p>
-            </div>
-          </div>
-          <div className="flex gap-4 items-center mt-4">
-            {cartItems.find((i) => i.bookId === book?.id) ? (
-              <Button className="w-md bg-amber-300 hover:bg-amber-300 text-lg border ">
-                <CiShoppingCart /> In cart
-              </Button>
-            ) : (
-              <Button
-                onClick={() => handleAddToCart(book?.id)}
-                className="w-md bg-amber-500 text-lg border hover:border-blue-500 cursor-pointer hover:bg-amber-600"
-              >
-                <CiShoppingCart /> Add to Cart
-              </Button>
-            )}
-
-            <div className="border  border-amber-500 rounded-md py-2 px-8 hover:border-amber-600 cursor-pointer">
-              {wishlist.find((item: any) => item.bookId === book?.id) ? (
-                <FaHeart
-                  onClick={() => removeFromWishlist(book?.id)}
-                  className="text-red-500"
-                  size={20}
-                />
-              ) : (
-                <CiHeart
-                  onClick={() => addToWishlist(book?.id)}
-                  className="text-red-500 hover:text-red-600"
-                  size={20}
-                />
+          <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+            <div className="divide-y divide-gray-100">
+              {book.genre && (
+                <StatRow label="Genre">
+                  <span className="rounded-md bg-gray-100 px-2 py-0.5 capitalize">
+                    {book.genre}
+                  </span>
+                </StatRow>
               )}
-
-              {/* <FaHeart className="text-red-500 " size={20} /> */}
+              {book.pages != null && (
+                <StatRow label="Pages">{book.pages}</StatRow>
+              )}
+              {book.publishedDate && (
+                <StatRow label="Published">
+                  <span className="inline-flex items-center gap-1.5">
+                    <LuCalendar className="h-4 w-4 text-gray-400" />
+                    {formatDate(book.publishedDate)}
+                  </span>
+                </StatRow>
+              )}
+              {book.publisher && (
+                <StatRow label="Publisher">{book.publisher}</StatRow>
+              )}
+              {book.isbn && (
+                <StatRow label="ISBN">
+                  <span className="font-mono text-xs">{book.isbn}</span>
+                </StatRow>
+              )}
             </div>
           </div>
-          <span className="bg-green-50 p-2 rounded-md text-gray-500">
-            ✓ Free shipping on orders over $50
-          </span>
+
+          <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <Button
+              type="button"
+              onClick={handleAddToCart}
+              disabled={cartBusy || inCart || book.stock <= 0}
+              className={`h-11 flex-1 cursor-pointer text-base font-semibold ${
+                inCart
+                  ? "bg-emerald-50 text-emerald-700 hover:bg-emerald-50"
+                  : "bg-amber-500 text-white hover:bg-amber-600"
+              } disabled:cursor-not-allowed disabled:opacity-90`}
+            >
+              <LuShoppingCart className="mr-2 h-4 w-4" />
+              {book.stock <= 0
+                ? "Out of stock"
+                : inCart
+                  ? "In Cart"
+                  : cartBusy
+                    ? "Adding…"
+                    : "Add to Cart"}
+            </Button>
+
+            <button
+              type="button"
+              onClick={toggleWishlist}
+              disabled={wishlistBusy}
+              aria-label={
+                inWishlist ? "Remove from wishlist" : "Add to wishlist"
+              }
+              aria-pressed={inWishlist}
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-amber-300 bg-white px-4 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-50 hover:text-amber-800 disabled:opacity-60"
+            >
+              {inWishlist ? (
+                <FaHeart className="h-5 w-5 text-red-500" />
+              ) : (
+                <CiHeart className="h-6 w-6 text-red-500" />
+              )}
+              {inWishlist ? "Wishlisted" : "Wishlist"}
+            </button>
+          </div>
+
+          {book.price < 50 && (
+            <p className="mt-1 rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+              ✓ Free shipping on orders over $50
+            </p>
+          )}
         </div>
-      </div>
+      </section>
 
-      <div className="border-t border-gray-200 mt-16 mb-10"></div>
+      <div className="my-12 border-t border-gray-200" />
 
-      <h1 className="text-2xl text-amber-900 font-bold mb-10">
-        More books on {book?.genre}
-      </h1>
+      <section>
+        <h2 className="mb-6 text-2xl font-bold capitalize text-amber-900">
+          More books in {book.genre ?? "this genre"}
+        </h2>
 
-      <div className="flex gap-6">
-        {bookByGenre?.map((book: bookType, i: number) => (
-          <BookCard
-            key={i}
-            bookId={book.id}
-            bookTitle={book.title}
-            bookUrl={book.imageUrl}
-            bookAuthor={book.author}
-            bookRating={book.bookRating}
-            bookPrice={book.price}
-            discountedPrice={book.price * 2}
-          />
-        ))}
-      </div>
+        {relatedLoading ? (
+          <div className="flex justify-center py-10">
+            <img src={spinner} alt="Loading…" className="h-12 w-12" />
+          </div>
+        ) : !related || related.length === 0 ? (
+          <p className="text-gray-500">No related books found.</p>
+        ) : (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {related.map((b) => (
+              <BookCard
+                key={b.id}
+                bookId={b.id}
+                bookTitle={b.title}
+                bookUrl={b.imageUrl}
+                bookAuthor={b.author}
+                bookRating={b.bookRating}
+                bookPrice={b.price}
+              />
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 };
