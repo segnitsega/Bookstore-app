@@ -1,6 +1,5 @@
 import { createContext, useContext } from "react";
 
-/** Cart row from API (`GET /user/cart/:id`) with nested `book` */
 export type CartLine = {
   id: string;
   userId?: string;

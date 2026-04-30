@@ -36,10 +36,7 @@ function authHeaders() {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-/**
- * Creates a Stripe Checkout session on the backend and returns the redirect URL.
- * The caller should redirect the browser to `url` (e.g. window.location.href = url).
- */
+
 export async function createCheckoutSession(): Promise<CheckoutSessionResponse> {
   if (!API) throw new Error("VITE_BACKEND_API is not configured");
 
@@ -51,7 +48,6 @@ export async function createCheckoutSession(): Promise<CheckoutSessionResponse> 
   return res.data;
 }
 
-/** Fetch order metadata for the success page using the Stripe session id from the URL. */
 export async function getOrderBySessionId(
   sessionId: string
 ): Promise<CheckoutOrder> {
@@ -64,7 +60,6 @@ export async function getOrderBySessionId(
   return res.data.order;
 }
 
-/** Fetch the authenticated user's order history (newest first). */
 export async function getMyOrders(): Promise<CheckoutOrder[]> {
   if (!API) throw new Error("VITE_BACKEND_API is not configured");
 
