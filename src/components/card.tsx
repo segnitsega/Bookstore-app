@@ -23,8 +23,8 @@ const highlightCards = [
 
 const Card = () => {
   return (
-    <section className="px-4 py-12 md:px-10 md:py-14 lg:px-16">
-      <div className="mx-auto grid w-full max-w-7xl gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <section className="px-4 py-10 md:px-8 md:py-14">
+      <div className="mx-auto grid w-full max-w-7xl gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {highlightCards.map(({ title, description, icon: Icon }) => (
           <article
             key={title}

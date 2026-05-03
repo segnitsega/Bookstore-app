@@ -1,79 +1,89 @@
-import { Button } from "./ui/button";
-import { FaArrowRight } from "react-icons/fa";
-import axios from "axios";
 import { useEffect, useState } from "react";
+import axios from "axios";
+import { Link } from "react-router-dom";
+import { FaArrowRight } from "react-icons/fa";
+import { Button } from "./ui/button";
 import BookCard from "./book-card";
 import type { bookType } from "./best-sellers";
 import spinner from "../assets/spinner.svg";
-import { Link } from "react-router-dom";
 
 const FeaturedBooks = () => {
   const url = import.meta.env.VITE_BACKEND_API;
 
-  const [featuredBooks, setFeaturedBooks] = useState<[] | null>(null);
+  const [featuredBooks, setFeaturedBooks] = useState<bookType[] | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | Error | unknown | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     async function getFeaturedBooks() {
       try {
-        const response = await axios(`${url}/books/featured`);
-        setFeaturedBooks(response.data.featuredBooks);
-        setLoading(false);
+        const response = await axios.get(`${url}/books/featured`);
+        if (cancelled) return;
+        setFeaturedBooks(response.data.featuredBooks ?? []);
       } catch (e) {
-        setError(e);
-        setLoading(false);
+        if (cancelled) return;
+        const message = e instanceof Error ? e.message : "Could not load books";
+        setError(message);
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     }
-
     getFeaturedBooks();
-  }, []);
+    return () => {
+      cancelled = true;
+    };
+  }, [url]);
 
   return (
-    <div className="mx-8 mb-12">
-      <div className="flex justify-between">
-        <div className="flex flex-col gap-2 mb-4">
-          <h1 className="text-2xl sm:text-4xl font-bold text-amber-900">
+    <section className="mx-auto w-full max-w-7xl px-4 py-10 md:px-8 md:py-14">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-1">
+          <h2 className="text-2xl font-bold text-amber-900 md:text-3xl">
             Featured Books
-          </h1>
-          <p className="text-gray-500">Our editor's picks for this month</p>
+          </h2>
+          <p className="text-sm text-gray-500 md:text-base">
+            Our editor's picks for this month
+          </p>
         </div>
-        <div className="relative text-blue-500 cursor-pointer">
+        <Button
+          asChild
+          variant="outline"
+          className="w-fit border-amber-300 text-amber-700 hover:bg-amber-50 hover:text-amber-800"
+        >
           <Link to="/books">
-            <Button className="bg-white text-blue-500 border border-amber-400 w-[100px] hover:text-gray-800 hover:bg-gray-100 cursor-pointer">
-              View All
-            </Button>
+            View All
+            <FaArrowRight className="ml-1 h-3.5 w-3.5" aria-hidden />
           </Link>
-          <FaArrowRight className="absolute top-2.5 left-20" />
-        </div>
+        </Button>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-6">
-        {loading && (
-          <img src={spinner} alt="Loading..." className="w-20 h-20 mx-auto" />
-        )}
-        {error && !featuredBooks ? (
-          <div className="mx-auto bg-red-100 text-red-800 px-4 py-2 rounded-md text-sm">
-            ⚠️ Error fetching featured books. Please refresh and try again.
-          </div>
-        ) : (
-          ""
-        )}
-        {featuredBooks &&
-          featuredBooks.map((book: bookType, index: number) => (
+      {loading ? (
+        <div className="flex justify-center py-10">
+          <img src={spinner} alt="Loading…" className="h-16 w-16" />
+        </div>
+      ) : error ? (
+        <div className="mx-auto max-w-md rounded-md bg-red-50 px-4 py-3 text-center text-sm text-red-700">
+          ⚠️ Error fetching featured books. Please refresh and try again.
+        </div>
+      ) : !featuredBooks || featuredBooks.length === 0 ? (
+        <p className="text-center text-gray-500">No featured books yet.</p>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {featuredBooks.map((book) => (
             <BookCard
-              key={index}
+              key={book.id}
               bookId={book.id}
               bookTitle={book.title}
               bookUrl={book.imageUrl}
               bookPrice={book.price}
               bookAuthor={book.author}
-              discountedPrice={book.price * 2}
               bookRating={book.bookRating}
             />
           ))}
-      </div>
-    </div>
+        </div>
+      )}
+    </section>
   );
 };
 

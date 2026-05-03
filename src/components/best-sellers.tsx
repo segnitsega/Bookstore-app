@@ -1,10 +1,10 @@
-import { Button } from "./ui/button";
-import { FaArrowRight } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
+import { FaArrowRight } from "react-icons/fa";
+import { Button } from "./ui/button";
 import BookCard from "./book-card";
 import spinner from "../assets/spinner.svg";
-import { Link } from "react-router-dom";
 
 export interface bookType {
   id: string;
@@ -25,72 +25,89 @@ export interface bookType {
   reviews: number;
   bookId: number;
 }
+
 const Bestsellers = () => {
   const url = import.meta.env.VITE_BACKEND_API;
-  const [bestsellersBook, setBestSellersBook] = useState<[] | null>(null);
+  const [bestsellersBook, setBestSellersBook] = useState<bookType[] | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | Error | unknown | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const limit = 4;
+
   useEffect(() => {
-    async function getbestsellersBook() {
+    let cancelled = false;
+    async function getBestsellers() {
       try {
-        const response = await axios(
+        const response = await axios.get(
           `${url}/books/bestsellers/?limit=${limit}`
         );
-        setBestSellersBook(response.data.bestsellersBooks);
-        setLoading(false);
+        if (cancelled) return;
+        setBestSellersBook(response.data.bestsellersBooks ?? []);
       } catch (e) {
-        setError(e);
-        setLoading(false);
+        if (cancelled) return;
+        const message =
+          e instanceof Error ? e.message : "Could not load bestsellers";
+        setError(message);
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     }
-    getbestsellersBook();
-  }, []);
-  return (
-    <div className="mx-8 bg-amber-50 py-2 md:py-20 px-4  mb-10 rounded-md">
-      <div className="flex sm:flex-col md:flex-row justify-between mb-4 sm:mb-0">
-        <div className="flex flex-col gap-2 mb-4">
-          <h1 className="text-2xl sm:text-4xl font-bold text-amber-900">
-            Bestsellers
-          </h1>
-          <p className="text-gray-500 hidden sm:block">The most popular books right now</p>
-        </div>
-        <div className="relative text-blue-500 mb-2 md:mb-0">
-          <Link to="/books/?filter=bestSellers">
-            <Button className="bg-white text-blue-500 border border-amber-400 w-[165px] sm:w-[200px] hover:text-gray-800 hover:bg-gray-100 cursor-pointer ml-4">
-              View All Bestsellers
-            </Button>
-          </Link>
-          <FaArrowRight className="hidden sm:block absolute top-2.5 left-43 sm:left-46" />
-        </div>
-      </div>
-      <div className="flex flex-col md:flex-row gap-6">
-        {loading && (
-          <img src={spinner} alt="Loading..." className="w-20 h-20 mx-auto" />
-        )}
+    getBestsellers();
+    return () => {
+      cancelled = true;
+    };
+  }, [url]);
 
-        {error ? (
-          <div className="mx-auto bg-red-100 text-red-800 px-4 py-2 rounded-md text-sm">
+  return (
+    <section className="mx-auto w-full max-w-7xl px-4 py-2 md:px-8 md:py-6">
+      <div className="rounded-2xl bg-amber-50 px-4 py-8 md:px-8 md:py-12">
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex flex-col gap-1">
+            <h2 className="text-2xl font-bold text-amber-900 md:text-3xl">
+              Bestsellers
+            </h2>
+            <p className="text-sm text-gray-500 md:text-base">
+              The most popular books right now
+            </p>
+          </div>
+          <Button
+            asChild
+            variant="outline"
+            className="w-fit border-amber-300 bg-white text-amber-700 hover:bg-amber-100 hover:text-amber-800"
+          >
+            <Link to="/books/?filter=bestSellers">
+              View All Bestsellers
+              <FaArrowRight className="ml-1 h-3.5 w-3.5" aria-hidden />
+            </Link>
+          </Button>
+        </div>
+
+        {loading ? (
+          <div className="flex justify-center py-10">
+            <img src={spinner} alt="Loading…" className="h-16 w-16" />
+          </div>
+        ) : error ? (
+          <div className="mx-auto max-w-md rounded-md bg-red-50 px-4 py-3 text-center text-sm text-red-700">
             ⚠️ Error fetching bestseller books. Please refresh and try again.
           </div>
+        ) : !bestsellersBook || bestsellersBook.length === 0 ? (
+          <p className="text-center text-gray-500">No bestsellers yet.</p>
         ) : (
-          ""
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {bestsellersBook.map((book) => (
+              <BookCard
+                key={book.id}
+                bookTitle={book.title}
+                bookUrl={book.imageUrl}
+                bookPrice={book.price}
+                bookAuthor={book.author}
+                bookRating={book.bookRating}
+                bookId={book.id}
+              />
+            ))}
+          </div>
         )}
-        {bestsellersBook &&
-          bestsellersBook.map((book: bookType, index: number) => (
-            <BookCard
-              key={index}
-              bookTitle={book.title}
-              bookUrl={book.imageUrl}
-              bookPrice={book.price}
-              bookAuthor={book.author}
-              discountedPrice={book.price * 2}
-              bookRating={book.bookRating}
-              bookId={book.id}
-            />
-          ))}
       </div>
-    </div>
+    </section>
   );
 };
 

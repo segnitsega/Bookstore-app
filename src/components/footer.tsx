@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 const Footer = () => {
   return (
     <footer className="border-t border-amber-100 bg-gradient-to-b from-amber-50 to-white">
-      <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-10 md:grid-cols-3 md:gap-8">
+      <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-10 sm:grid-cols-2 md:grid-cols-3 md:gap-8 md:px-8">
         <div className="space-y-4">
           <div className="flex items-center gap-1.5">
             <IoMdBook size={35} className="text-amber-600" />
@@ -72,7 +72,7 @@ const Footer = () => {
       </div>
 
       <div className="border-t border-amber-200/70">
-        <div className="mx-auto flex w-full max-w-7xl flex-col justify-between gap-3 px-4 py-5 text-sm text-gray-500 md:flex-row md:items-center">
+        <div className="mx-auto flex w-full max-w-7xl flex-col justify-between gap-3 px-4 py-5 text-sm text-gray-500 md:flex-row md:items-center md:px-8">
           <p>© 2026 BookHub. All rights reserved.</p>
           <div className="flex flex-wrap items-center gap-5">
             <p className="transition-colors hover:text-amber-600">Privacy Policy</p>

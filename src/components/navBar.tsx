@@ -1,5 +1,6 @@
 import { IoMdBook } from "react-icons/io";
 import { CiSearch, CiShoppingCart } from "react-icons/ci";
+import { LuX } from "react-icons/lu";
 import { Link, useLocation } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import debounce from "lodash/debounce";
@@ -54,6 +55,7 @@ const NavBar = () => {
 
   useEffect(() => {
     setResults([]);
+    setQuery("");
   }, [location.pathname]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,25 +71,70 @@ const NavBar = () => {
     fetchBooks.cancel();
   };
 
+  const isActive = (path: string) =>
+    location.pathname === path || location.pathname.startsWith(`${path}/`);
+
+  const cartCount = getCartCount();
+
+  const SearchResults = () => {
+    if (results.length > 0 && !error) {
+      return (
+        <div className="absolute left-0 right-0 z-50 mt-2 max-h-72 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-xl">
+          {results.map((book) => (
+            <Link
+              key={book.id}
+              to={`/books/${book.id}`}
+              onClick={clearSearch}
+              className="block border-b border-gray-100 px-4 py-3 transition-colors last:border-b-0 hover:bg-amber-50"
+            >
+              <p className="text-sm font-semibold text-gray-800">{book.title}</p>
+              <p className="text-xs text-gray-500">by {book.author}</p>
+            </Link>
+          ))}
+        </div>
+      );
+    }
+    if (error) {
+      return (
+        <div className="absolute left-0 right-0 z-50 mt-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 shadow-lg">
+          Error searching books. Please try again.
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
-    <div className="sticky top-0 z-50 border-b border-amber-100 bg-white/90 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-amber-100 bg-white/90 backdrop-blur-md">
       <div className="mx-auto hidden w-full max-w-7xl items-center gap-6 px-4 py-3 md:flex">
         <Link
           to="/dashboard"
           className="flex items-center gap-1.5 transition-transform hover:scale-[1.01]"
         >
           <IoMdBook size={34} className="text-amber-600" />
-          <h1 className="text-2xl font-bold tracking-tight text-amber-900">BookHub</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-amber-900">
+            BookHub
+          </h1>
         </Link>
 
-        <div className="flex items-center gap-7 text-sm font-medium text-gray-700">
-          <Link to="/dashboard" className="transition-colors hover:text-amber-600">
+        <nav className="flex items-center gap-7 text-sm font-medium text-gray-700">
+          <Link
+            to="/dashboard"
+            className={`transition-colors hover:text-amber-600 ${
+              isActive("/dashboard") ? "text-amber-700" : ""
+            }`}
+          >
             Home
           </Link>
-          <Link to="/books" className="transition-colors hover:text-amber-600">
+          <Link
+            to="/books"
+            className={`transition-colors hover:text-amber-600 ${
+              isActive("/books") ? "text-amber-700" : ""
+            }`}
+          >
             Books
           </Link>
-        </div>
+        </nav>
 
         <div className="relative ml-auto w-full max-w-lg">
           <div className="flex h-10 items-center gap-2 rounded-lg border border-amber-200 bg-white px-3 shadow-sm">
@@ -99,43 +146,34 @@ const NavBar = () => {
               onChange={handleChange}
               className="w-full bg-transparent text-sm text-gray-800 outline-none placeholder:text-gray-400"
             />
-            {loading && <img src={loadingSpinner} className="h-5 w-12" />}
+            {loading && <img src={loadingSpinner} className="h-5 w-12" alt="" />}
+            {!loading && query && (
+              <button
+                type="button"
+                onClick={clearSearch}
+                aria-label="Clear search"
+                className="rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700"
+              >
+                <LuX size={14} />
+              </button>
+            )}
           </div>
-
-          {results.length > 0 && !error && (
-            <div className="absolute left-0 right-0 mt-2 max-h-72 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-xl">
-              {results.map((book) => (
-                <Link
-                  key={book.id}
-                  to={`/books/${book.id}`}
-                  onClick={clearSearch}
-                  className="block border-b border-gray-100 px-4 py-3 transition-colors last:border-b-0 hover:bg-amber-50"
-                >
-                  <p className="text-sm font-semibold text-gray-800">{book.title}</p>
-                  <p className="text-xs text-gray-500">by {book.author}</p>
-                </Link>
-              ))}
-            </div>
-          )}
-
-          {error && (
-            <div className="absolute left-0 right-0 mt-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 shadow-lg">
-              Error searching books. Please try again.
-            </div>
-          )}
+          <SearchResults />
         </div>
 
         <div className="flex items-center gap-6 pl-2">
-          <Link to="/cart" className="relative">
+          <Link to="/cart" className="relative" aria-label="Cart">
             <CiShoppingCart
               size={30}
               className="cursor-pointer text-blue-600 transition-colors hover:text-blue-700"
             />
-            <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-amber-600 text-xs text-white">
-              {getCartCount()}
-            </span>
+            {cartCount > 0 && (
+              <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-600 px-1 text-xs font-semibold text-white">
+                {cartCount}
+              </span>
+            )}
           </Link>
-          <Link to="/profile">
+          <Link to="/profile" aria-label="Profile">
             <BsPerson
               size={28}
               className="cursor-pointer text-slate-700 transition-colors hover:text-amber-700"
@@ -144,24 +182,76 @@ const NavBar = () => {
         </div>
       </div>
 
-      <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-3 md:hidden">
-        <Link to="/dashboard" className="flex items-center gap-1">
-          <IoMdBook size={30} className="text-amber-600" />
-          <h1 className="text-xl font-bold text-amber-900">BookHub</h1>
-        </Link>
-        <div className="flex items-center gap-4">
-          <Link to="/cart" className="relative">
-            <CiShoppingCart size={28} className="text-blue-600" />
-            <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-amber-600 text-xs text-white">
-              {getCartCount()}
-            </span>
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 py-3 md:hidden">
+        <div className="flex items-center justify-between">
+          <Link to="/dashboard" className="flex items-center gap-1">
+            <IoMdBook size={28} className="text-amber-600" />
+            <h1 className="text-lg font-bold text-amber-900">BookHub</h1>
           </Link>
-          <Link to="/profile">
-            <BsPerson size={26} className="text-slate-700" />
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link to="/cart" className="relative" aria-label="Cart">
+              <CiShoppingCart size={26} className="text-blue-600" />
+              {cartCount > 0 && (
+                <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-600 px-1 text-xs font-semibold text-white">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+            <Link to="/profile" aria-label="Profile">
+              <BsPerson size={24} className="text-slate-700" />
+            </Link>
+          </div>
         </div>
+
+        <div className="relative">
+          <div className="flex h-10 items-center gap-2 rounded-lg border border-amber-200 bg-white px-3 shadow-sm">
+            <CiSearch size={18} className="text-gray-500" />
+            <input
+              type="text"
+              placeholder="Search books or authors..."
+              value={query}
+              onChange={handleChange}
+              className="w-full bg-transparent text-sm text-gray-800 outline-none placeholder:text-gray-400"
+            />
+            {loading && <img src={loadingSpinner} className="h-5 w-12" alt="" />}
+            {!loading && query && (
+              <button
+                type="button"
+                onClick={clearSearch}
+                aria-label="Clear search"
+                className="rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700"
+              >
+                <LuX size={14} />
+              </button>
+            )}
+          </div>
+          <SearchResults />
+        </div>
+
+        <nav className="flex items-center gap-2 text-sm font-medium">
+          <Link
+            to="/dashboard"
+            className={`rounded-full border px-3 py-1.5 transition-colors ${
+              isActive("/dashboard")
+                ? "border-amber-300 bg-amber-100 text-amber-800"
+                : "border-amber-200 bg-white text-gray-700 hover:bg-amber-50"
+            }`}
+          >
+            Home
+          </Link>
+          <Link
+            to="/books"
+            className={`rounded-full border px-3 py-1.5 transition-colors ${
+              isActive("/books")
+                ? "border-amber-300 bg-amber-100 text-amber-800"
+                : "border-amber-200 bg-white text-gray-700 hover:bg-amber-50"
+            }`}
+          >
+            Books
+          </Link>
+        </nav>
       </div>
-    </div>
+    </header>
   );
 };
 

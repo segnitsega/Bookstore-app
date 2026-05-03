@@ -49,9 +49,9 @@ const Welcome = () => {
   };
 
   return (
-    <section className="bg-gradient-to-b from-amber-50 to-white px-4 py-10 md:px-10 md:py-14 lg:px-16">
-      <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-2">
-        <div className="space-y-6">
+    <section className="bg-gradient-to-b from-amber-50 to-white px-4 py-10 md:px-8 md:py-14 lg:px-16">
+      <div className="mx-auto grid max-w-7xl items-center gap-8 md:gap-10 lg:grid-cols-2">
+        <div className="space-y-5 md:space-y-6">
           <div className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-white px-3 py-1.5 shadow-sm">
             <IoMdBook className="text-amber-600" size={20} />
             <span className="text-xs font-semibold uppercase tracking-wide text-amber-700">
@@ -59,18 +59,18 @@ const Welcome = () => {
             </span>
           </div>
 
-          <h1 className="text-3xl font-bold tracking-tight text-amber-700 md:text-5xl">
+          <h1 className="text-3xl font-bold tracking-tight text-amber-700 sm:text-4xl md:text-5xl">
             Discover Your Next
             <span className="block text-amber-500">Great Read</span>
           </h1>
 
-          <p className="max-w-xl text-sm leading-7 text-gray-600 md:text-lg">
+          <p className="max-w-xl text-sm leading-7 text-gray-600 sm:text-base md:text-lg md:leading-8">
             Explore thousands of books, from bestselling novels to hidden gems.
             Your perfect book is waiting to be discovered.
           </p>
 
           <div className="relative space-y-3">
-            <div className="flex gap-2">
+            <div className="flex flex-col gap-2 sm:flex-row">
               <div className="flex h-11 w-full items-center gap-2 rounded-lg border border-amber-200 bg-white px-3 shadow-sm">
                 <CiSearch size={20} className="text-gray-500" />
                 <input
@@ -83,7 +83,7 @@ const Welcome = () => {
               </div>
               <Button
                 disabled={loading}
-                className="h-11 cursor-pointer bg-amber-600 px-5 font-medium text-white hover:bg-amber-700 disabled:cursor-not-allowed"
+                className="h-11 w-full cursor-pointer bg-amber-600 px-5 font-medium text-white hover:bg-amber-700 disabled:cursor-not-allowed sm:w-auto"
                 onClick={() => fetchBooks(query)}
               >
                 {loading ? "Searching..." : "Search"}
@@ -132,15 +132,15 @@ const Welcome = () => {
           </div>
         </div>
 
-        <div className="relative">
-          <div className="absolute -left-2 top-4 z-10 flex items-center gap-2 rounded-md border border-amber-100 bg-white px-3 py-2 text-xs shadow-md md:text-sm">
-            <IoMdBook size={20} className="text-amber-600" />
+        <div className="relative mx-auto w-full max-w-md lg:max-w-none">
+          <div className="absolute left-3 top-3 z-10 flex items-center gap-2 rounded-md border border-amber-100 bg-white px-2.5 py-1.5 text-xs shadow-md sm:left-4 sm:top-4 sm:px-3 sm:py-2 sm:text-sm">
+            <IoMdBook size={18} className="text-amber-600" />
             <span className="font-medium text-gray-700">10,000+ Books</span>
           </div>
           <img
             src={bookoption1}
             alt="books_image"
-            className="w-full rounded-2xl object-cover shadow-xl shadow-amber-100/60 lg:max-h-[520px]"
+            className="aspect-[4/3] w-full rounded-2xl object-cover shadow-xl shadow-amber-100/60 sm:aspect-[16/10] md:aspect-[16/9] lg:aspect-auto lg:max-h-[520px]"
           />
         </div>
       </div>
