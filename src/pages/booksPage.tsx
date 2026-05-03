@@ -174,16 +174,16 @@ const BooksPage = () => {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 md:px-8 md:py-10">
-      <header className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold text-amber-900 md:text-4xl">
+      <header className="flex flex-col gap-1.5">
+        <h1 className="text-2xl font-bold text-amber-900 sm:text-3xl md:text-4xl">
           Browse Books
         </h1>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-gray-500 md:text-base">
           Discover your next favorite read.
         </p>
       </header>
 
-      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mt-5 flex flex-col gap-3 md:mt-6 lg:flex-row lg:items-center lg:justify-between">
         <span className="text-sm text-gray-500">
           {showingLabel ?? "\u00A0"}
         </span>
@@ -193,7 +193,7 @@ const BooksPage = () => {
             type="button"
             variant="outline"
             onClick={() => setShowMobileFilter((v) => !v)}
-            className="lg:hidden"
+            className="shrink-0 lg:hidden"
             aria-expanded={showMobileFilter}
           >
             <LuFilter className="mr-1.5 h-4 w-4" />
@@ -206,7 +206,7 @@ const BooksPage = () => {
               e.preventDefault();
               setDebouncedQuery(query.trim());
             }}
-            className="flex w-full min-w-[260px] items-center gap-2 rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus-within:border-amber-400 sm:w-[340px]"
+            className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded-md border border-gray-300 bg-white px-3 shadow-sm focus-within:border-amber-400 lg:w-[340px] lg:flex-none"
           >
             <CiSearch className="h-5 w-5 shrink-0 text-gray-500" />
             <input
@@ -215,14 +215,14 @@ const BooksPage = () => {
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search books, authors, genre…"
               aria-label="Search books"
-              className="w-full bg-transparent text-sm outline-none placeholder:text-gray-400"
+              className="w-full min-w-0 bg-transparent text-sm outline-none placeholder:text-gray-400"
             />
             {query && (
               <button
                 type="button"
                 onClick={() => setQuery("")}
                 aria-label="Clear search"
-                className="inline-flex h-6 w-6 items-center justify-center rounded text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded text-gray-400 hover:bg-gray-100 hover:text-gray-600"
               >
                 <LuX className="h-4 w-4" />
               </button>
@@ -237,8 +237,8 @@ const BooksPage = () => {
         </div>
       )}
 
-      <div className="mt-4 flex gap-6">
-        <aside className="hidden w-[300px] shrink-0 lg:block">
+      <div className="mt-4 flex gap-6 lg:items-start">
+        <aside className="hidden w-[280px] shrink-0 lg:sticky lg:top-4 lg:block xl:w-[300px]">
           <Filter />
         </aside>
 
@@ -265,7 +265,7 @@ const BooksPage = () => {
               No books to show.
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {list.map((book) => (
                 <BookCard
                   key={book.id}

@@ -93,7 +93,7 @@ const Filter = ({ onApply }: FilterProps = {}) => {
     minRating > 0;
 
   return (
-    <div className="flex w-full flex-col gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+    <div className="flex w-full flex-col gap-4 rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 font-bold">
           <LuFilter size={20} />
@@ -114,11 +114,11 @@ const Filter = ({ onApply }: FilterProps = {}) => {
       <div className="flex flex-col gap-2">
         <h2 className="text-base font-semibold text-foreground">Sort by</h2>
         <DropdownMenu>
-          <DropdownMenuTrigger className="w-full flex items-center justify-between p-2 border border-gray-200 rounded-md hover:border-blue-300 cursor-pointer">
+          <DropdownMenuTrigger className="flex h-10 w-full items-center justify-between rounded-md border border-gray-200 px-3 text-sm hover:border-amber-300 cursor-pointer">
             {sortLabelFromParam(sortValue)}
-            <HiChevronUpDown />
+            <HiChevronUpDown className="h-4 w-4 text-gray-500" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-[260px]">
+          <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)]">
             {SORT_OPTIONS.map((opt) => (
               <DropdownMenuItem
                 key={opt.value}
@@ -133,11 +133,11 @@ const Filter = ({ onApply }: FilterProps = {}) => {
       <div className="flex flex-col gap-2">
         <h2 className="text-base font-semibold text-foreground">Genre</h2>
         <DropdownMenu>
-          <DropdownMenuTrigger className="w-full flex items-center justify-between p-2 border border-gray-200 rounded-md hover:border-blue-300 cursor-pointer">
+          <DropdownMenuTrigger className="flex h-10 w-full items-center justify-between rounded-md border border-gray-200 px-3 text-sm hover:border-amber-300 cursor-pointer">
             {genreLabelFromParam(genreValue)}
-            <HiChevronUpDown />
+            <HiChevronUpDown className="h-4 w-4 text-gray-500" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-[260px]">
+          <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)]">
             {GENRES.map((g) => (
               <DropdownMenuItem
                 key={g.label}
