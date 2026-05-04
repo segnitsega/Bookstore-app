@@ -432,7 +432,7 @@ const BookDetails = () => {
         ) : !related || related.length === 0 ? (
           <p className="text-gray-500">No related books found.</p>
         ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {related.map((b) => (
               <BookCard
                 key={b.id}

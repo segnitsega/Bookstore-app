@@ -1,43 +1,81 @@
-# 📚 Fullstack Bookstore App
+# Bookstore Frontend (React + TypeScript)
 
-An e-commerce web application for browsing, buying, and managing books — built with **React**, **TypeScript**, **Tailwind CSS**, **Node.js**, **Express**, **Prisma**, and **PostgreSQL**.
+Frontend for the Bookstore app: browse books, filter/search, view details, manage cart/wishlist, and checkout with Stripe (via the backend).
 
----
+## Live demo
 
-## 🌐 Live Demo
+- `https://bookstore-app12.netlify.app/`
 
-> _Coming soon_ 
+## Features
 
----
+- **Books browsing**: featured, bestsellers, genre browsing
+- **Filtering & sorting**: URL-synced filters (shareable links), price + rating sliders, client-side sort for price/rating
+- **Search**: debounced search with clear button + results
+- **Book details**: polished details page with related books by genre
+- **Cart**: improved UX, empty states, sticky order summary
+- **Wishlist**: add/remove wishlist items (auth required)
+- **Profile**: profile update form + dynamic orders history
+- **Payments**: Stripe Checkout redirect + success page that polls order status
+- **Responsive UI**: mobile / tablet / desktop layouts across main pages
 
-## 🛍️ Features
+## Tech stack
 
-- 🔎 Browse all books, filter by genre or rating
-- ⭐ View featured books and best sellers
-- 📖 See detailed book info and related books
-- 🛒 Add books to cart (shopping experience)
-- 👤 View user profile (auth-ready)
-- ⚙️ Admin-ready backend structure
-- 🧠 Robust data fetching with Axios
-
----
-
-## 🧱 Tech Stack
-
-### 🖥 Frontend:
-- React + TypeScript
-- Tailwind CSS
+- React + TypeScript (Vite)
+- Tailwind CSS + shadcn/ui components
 - React Router
-- Axios 
+- Axios
+- Sonner (toasts)
 
-### 🛠 Backend:
-- Node.js + Express
-- Prisma ORM
-- PostgreSQL
-- RESTful API
+## Project structure
 
----
+- `src/pages/` — route pages (books, details, cart, profile, checkout success, etc.)
+- `src/components/` — UI + feature components (book cards, filters, orders, etc.)
+- `src/contexts/` — cart state management
+- `src/utils/checkout.ts` — Stripe-related API helpers
+- `public/_redirects` — Netlify SPA routing (important for deep links)
 
-### Live demo 
- - https://bookstore-app12.netlify.app/
+## Getting started
+
+```bash
+cd Bookstore-app
+npm install
+```
+
+### Environment variables
+
+Create `Bookstore-app/.env`:
+
+```bash
+VITE_BACKEND_API=http://localhost:8000
+```
+
+## Scripts
+
+```bash
+npm run dev
+npm run build
+npm run preview
+```
+
+## Stripe checkout (local)
+
+1) Start the backend and set these backend env vars:
+   - `STRIPE_SECRET_KEY`
+   - `STRIPE_WEBHOOK_SECRET`
+   - `CLIENT_URL=http://localhost:5173`
+
+2) Run Stripe CLI to forward webhooks:
+
+```bash
+stripe listen --forward-to localhost:8000/payment/webhook
+```
+
+3) In the frontend:
+   - Add a book to cart → proceed to checkout → pay with Stripe test card `4242 4242 4242 4242`.
+   - After redirect, `/checkout/success` polls the backend until the order becomes `paid`.
+
+## Deployment notes (Netlify)
+
+- Keep `public/_redirects` in place so routes like `/books/:id` and `/checkout/success` don’t 404.
+- Set `VITE_BACKEND_API` in Netlify environment variables to your deployed backend URL.
 
