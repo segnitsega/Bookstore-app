@@ -44,7 +44,7 @@ const OrderSummary = ({ price, disabled = false, itemCount }: props) => {
   };
 
   return (
-    <div className="flex w-full flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+    <div className="flex w-full flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
       <div className="flex items-baseline justify-between">
         <h2 className="text-xl font-bold text-slate-800">Order Summary</h2>
         {typeof itemCount === "number" && (

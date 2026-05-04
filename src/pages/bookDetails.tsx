@@ -62,9 +62,9 @@ const StatRow = ({
   label: string;
   children: React.ReactNode;
 }) => (
-  <div className="flex items-center justify-between gap-4 py-2">
+  <div className="flex flex-col gap-0.5 py-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
     <span className="text-sm text-gray-500">{label}</span>
-    <span className="text-right text-sm font-medium text-slate-800">
+    <span className="text-sm font-medium text-slate-800 sm:text-right">
       {children}
     </span>
   </div>
@@ -247,14 +247,14 @@ const BookDetails = () => {
 
   if (error || !book) {
     return (
-      <div className="mx-auto max-w-md p-8 text-center">
-        <h1 className="text-xl font-semibold text-slate-800">
+      <div className="mx-auto max-w-md px-4 py-10 text-center sm:px-6">
+        <h1 className="text-lg font-semibold text-slate-800 sm:text-xl">
           {error ?? "Book not found"}
         </h1>
         <Button
           type="button"
           onClick={() => navigate(-1)}
-          className="mt-4 bg-amber-500 hover:bg-amber-600"
+          className="mt-4 w-full bg-amber-500 hover:bg-amber-600 sm:w-auto"
         >
           <FaArrowLeft className="mr-2 h-3.5 w-3.5" />
           Go back
@@ -274,19 +274,19 @@ const BookDetails = () => {
         : { text: "In stock", cls: "bg-emerald-50 text-emerald-700" };
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6 md:px-8 md:py-10">
+    <div className="mx-auto max-w-7xl px-4 py-6 md:px-8 md:py-10">
       <Button
         type="button"
         variant="outline"
         onClick={() => navigate(-1)}
-        className="mb-6 w-fit border-amber-300 text-amber-700 hover:bg-amber-50 hover:text-amber-800"
+        className="mb-6 w-full border-amber-300 text-amber-700 hover:bg-amber-50 hover:text-amber-800 sm:w-fit"
       >
         <FaArrowLeft className="mr-2 h-3.5 w-3.5" aria-hidden />
         Back
       </Button>
 
-      <section className="grid gap-8 md:grid-cols-[minmax(0,420px)_1fr] md:items-start">
-        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-gray-50 shadow-sm">
+      <section className="grid gap-8 lg:grid-cols-[minmax(0,420px)_1fr] lg:items-start">
+        <div className="mx-auto w-full max-w-sm overflow-hidden rounded-2xl border border-gray-200 bg-gray-50 shadow-sm lg:mx-0 lg:max-w-none">
           <img
             src={book.imageUrl}
             alt={book.title}
@@ -295,7 +295,7 @@ const BookDetails = () => {
           />
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div className="flex min-w-0 flex-col gap-4">
           <div className="flex flex-wrap items-center gap-2">
             {book.genre && (
               <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium uppercase tracking-wide text-amber-700">
@@ -309,10 +309,12 @@ const BookDetails = () => {
             </span>
           </div>
 
-          <h1 className="text-2xl font-bold capitalize text-slate-900 md:text-3xl">
+          <h1 className="text-2xl font-bold capitalize text-slate-900 sm:text-3xl">
             {book.title}
           </h1>
-          <p className="text-lg capitalize text-amber-700">by {book.author}</p>
+          <p className="text-base capitalize text-amber-700 sm:text-lg">
+            by {book.author}
+          </p>
 
           <div className="flex flex-wrap items-center gap-3">
             <Stars rating={book.bookRating} />
@@ -323,7 +325,7 @@ const BookDetails = () => {
           </div>
 
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-bold tabular-nums text-amber-600">
+            <span className="text-2xl font-bold tabular-nums text-amber-600 sm:text-3xl">
               {money(book.price)}
             </span>
           </div>
@@ -332,12 +334,12 @@ const BookDetails = () => {
             <h2 className="text-base font-semibold text-slate-800">
               Description
             </h2>
-            <p className="mt-1 text-sm leading-relaxed text-gray-600">
+            <p className="mt-1 break-words text-sm leading-relaxed text-gray-600 sm:text-base">
               {book.description || "No description available."}
             </p>
           </div>
 
-          <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+          <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
             <div className="divide-y divide-gray-100">
               {book.genre && (
                 <StatRow label="Genre">
@@ -368,12 +370,12 @@ const BookDetails = () => {
             </div>
           </div>
 
-          <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-stretch">
             <Button
               type="button"
               onClick={handleAddToCart}
               disabled={cartBusy || inCart || book.stock <= 0}
-              className={`h-11 flex-1 cursor-pointer text-base font-semibold ${
+              className={`h-11 w-full flex-1 cursor-pointer text-base font-semibold sm:min-w-0 ${
                 inCart
                   ? "bg-emerald-50 text-emerald-700 hover:bg-emerald-50"
                   : "bg-amber-500 text-white hover:bg-amber-600"
@@ -397,7 +399,7 @@ const BookDetails = () => {
                 inWishlist ? "Remove from wishlist" : "Add to wishlist"
               }
               aria-pressed={inWishlist}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-amber-300 bg-white px-4 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-50 hover:text-amber-800 disabled:opacity-60"
+              className="inline-flex h-11 w-full shrink-0 items-center justify-center gap-2 rounded-md border border-amber-300 bg-white px-4 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-50 hover:text-amber-800 disabled:opacity-60 sm:w-auto sm:min-w-[140px]"
             >
               {inWishlist ? (
                 <FaHeart className="h-5 w-5 text-red-500" />
@@ -418,8 +420,8 @@ const BookDetails = () => {
 
       <div className="my-12 border-t border-gray-200" />
 
-      <section>
-        <h2 className="mb-6 text-2xl font-bold capitalize text-amber-900">
+      <section className="min-w-0">
+        <h2 className="mb-4 text-xl font-bold capitalize text-amber-900 sm:mb-6 sm:text-2xl">
           More books in {book.genre ?? "this genre"}
         </h2>
 
@@ -430,7 +432,7 @@ const BookDetails = () => {
         ) : !related || related.length === 0 ? (
           <p className="text-gray-500">No related books found.</p>
         ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {related.map((b) => (
               <BookCard
                 key={b.id}

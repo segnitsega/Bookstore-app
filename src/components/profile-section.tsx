@@ -41,7 +41,7 @@ const ProfileSection = ({ user }: Props) => {
   };
 
   return (
-    <div className="flex flex-col gap-4 rounded-lg border p-4 shadow">
+    <div className="flex flex-col gap-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
       <div className="flex items-center gap-2 text-lg text-slate-900">
         <FiSettings />
         <h2 className="font-semibold">Profile Information</h2>

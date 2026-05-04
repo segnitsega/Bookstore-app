@@ -66,9 +66,9 @@ const Orders = ({ onCountChange }: Props) => {
   }, [onCountChange]);
 
   return (
-    <div className="rounded-lg border p-4 shadow">
-      <div className="mb-4 flex items-center gap-2 text-xl text-slate-900">
-        <FiPackage />
+    <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
+      <div className="mb-4 flex items-center gap-2 text-lg text-slate-900 sm:text-xl">
+        <FiPackage className="h-5 w-5 shrink-0" />
         <h2 className="font-semibold">Order History</h2>
       </div>
 
@@ -102,9 +102,9 @@ const Orders = ({ onCountChange }: Props) => {
             return (
               <li
                 key={order.id}
-                className="rounded-lg border border-gray-200 p-4"
+                className="rounded-lg border border-gray-200 p-3 sm:p-4"
               >
-                <div className="flex flex-wrap items-start justify-between gap-2">
+                <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between sm:gap-2">
                   <div>
                     <p className="text-sm text-gray-500">
                       Order{" "}
@@ -117,7 +117,7 @@ const Orders = ({ onCountChange }: Props) => {
                     </p>
                   </div>
                   <span
-                    className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${
+                    className={`w-fit rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${
                       STATUS_STYLES[status] ?? "bg-gray-100 text-gray-700"
                     }`}
                   >
@@ -129,7 +129,7 @@ const Orders = ({ onCountChange }: Props) => {
                   {order.orderItem.map((item) => (
                     <li
                       key={item.id}
-                      className="flex items-center gap-3 py-2"
+                      className="flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:gap-3 sm:py-2"
                     >
                       {item.book.imageUrl ? (
                         <img
@@ -140,25 +140,25 @@ const Orders = ({ onCountChange }: Props) => {
                       ) : (
                         <div className="h-12 w-9 shrink-0 rounded bg-gray-100" />
                       )}
-                      <div className="min-w-0 flex-1">
+                      <div className="min-w-0 flex-1 sm:pr-2">
                         <Link
                           to={`/books/${item.bookId}`}
-                          className="block truncate font-medium text-slate-800 hover:text-amber-600"
+                          className="block font-medium text-slate-800 hover:text-amber-600 sm:truncate"
                         >
                           {item.book.title}
                         </Link>
-                        <p className="truncate text-xs text-gray-500">
+                        <p className="text-xs text-gray-500 sm:truncate">
                           {item.book.author}
                         </p>
                       </div>
-                      <p className="shrink-0 text-sm text-gray-600 tabular-nums">
+                      <p className="shrink-0 text-sm text-gray-600 tabular-nums sm:ml-auto sm:text-right">
                         {item.quantity} × {money(item.price)}
                       </p>
                     </li>
                   ))}
                 </ul>
 
-                <div className="mt-3 flex items-center justify-between border-t pt-3 text-sm">
+                <div className="mt-3 flex flex-col gap-1 border-t border-gray-100 pt-3 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-0">
                   <span className="text-gray-500">
                     {totalQty} item{totalQty === 1 ? "" : "s"}
                   </span>

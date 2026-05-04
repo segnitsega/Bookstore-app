@@ -68,28 +68,30 @@ const CartCard = (book: CartProp) => {
       src={book.imageUrl}
       alt={book.title}
       loading="lazy"
-      className="h-32 w-24 shrink-0 rounded-lg border border-gray-100 bg-gray-50 object-cover sm:h-36 sm:w-28"
+      className="h-40 w-28 max-w-full rounded-lg border border-gray-100 bg-gray-50 object-cover sm:h-36 sm:w-28"
     />
   );
 
   return (
     <article
       aria-busy={loading}
-      className={`group relative flex gap-4 rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md ${
+      className={`group relative flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:gap-4 ${
         loading ? "opacity-60" : ""
       }`}
     >
-      {book.bookId ? (
-        <Link to={`/books/${book.bookId}`} className="shrink-0">
-          {ImageEl}
-        </Link>
-      ) : (
-        ImageEl
-      )}
+      <div className="flex shrink-0 justify-center sm:justify-start">
+        {book.bookId ? (
+          <Link to={`/books/${book.bookId}`} className="block">
+            {ImageEl}
+          </Link>
+        ) : (
+          ImageEl
+        )}
+      </div>
 
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             {TitleEl}
             <p className="text-sm text-gray-500">{book.author}</p>
           </div>
@@ -99,7 +101,7 @@ const CartCard = (book: CartProp) => {
             onClick={handleBookDelete}
             disabled={loading}
             aria-label={`Remove "${book.title}" from cart`}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-red-600 transition-colors hover:bg-red-50 hover:text-red-700 disabled:cursor-not-allowed disabled:text-red-300"
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md text-red-600 transition-colors hover:bg-red-50 hover:text-red-700 disabled:cursor-not-allowed disabled:text-red-300"
           >
             <RiDeleteBin5Line className="h-5 w-5" />
           </button>
@@ -109,7 +111,7 @@ const CartCard = (book: CartProp) => {
           {book.description}
         </p>
 
-        <div className="mt-auto flex items-end justify-between pt-3">
+        <div className="mt-auto flex flex-wrap items-end justify-between gap-2 pt-3">
           <span className="text-xs uppercase tracking-wide text-gray-400">
             Qty 1
           </span>
