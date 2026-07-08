@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       return;
     }
     try {
-      const verified = await axios.get(`${url}/protected `, {
+      const verified = await axios.get(`${url}/protected`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!verified) {
